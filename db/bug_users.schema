@@ -1,0 +1,36 @@
+#
+# Description
+# -----------
+# This table is based on threading functions available in the core.
+# 
+# This table can be used to assign extra permissions to users for a thread.  
+# This can be useful for customer service threads, or bugs/features.  A
+# customer service thread can be assigned to multiple users, not just anyone
+# who comments or starts the thread.  This allow managers, etc to follow threads
+# they have no other connection to.  Bugs and Features can be assigned to developer(s).
+#
+# Fields
+# ------
+# bug_id:		The thread the user is following.
+# user_id:			The user following the thread.
+# perms:			The bits to determine how the user is attached to the thread.
+#					
+#					_ 0x01 - following, notify via email of updates/changes in thread.
+#					_ 0x02 - assigned, used to assign bugs to developers for tracking.
+#
+# 					If the status is 0, then the user is not to be notified about updates. 
+# 					The status should be set to 0 so future comments by the user, do not
+# 					change this unless this wish.  If the entry was removed, the next comment
+#					they make would add the entry back.
+#
+# date_added:		The date and time the user subscribed to this thread.
+# last_updated:		The date and time the status was last changed.
+#
+create table bug_users (
+	bug_id int not null,
+	user_id varchar(50) not null,
+	perms tinyint unsigned not null,
+	date_added datetime not null,
+	last_updated datetime not null,
+	primary key (bug_id, user_id)
+) ENGINE='InnoDB', COMMENT='v1.02';

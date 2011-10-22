@@ -1,0 +1,26 @@
+#
+# Description
+# -----------
+# This table is based on threading functions available in the core.
+#
+# Fields
+# ------
+# id:					The followup ID.
+# parent_id:			The parent to the followup.  This allows nexted replies.
+# bug_id:				The thread the followup is attached to.
+# user_id:				The thread name.
+# content:				The text content of the followup.  
+# date_added:			The date and time the thread was added.
+# last_updated:			The date and time the thread was last updated.
+#
+create table bug_followups (
+	id bigint not null auto_increment,
+	parent_id bigint not null,
+	bug_id int not null,
+	user_id int not null,
+	content text,
+	date_added datetime not null,
+	last_updated datetime not null,
+	primary key (id),
+	index (bug_id, user_id)
+) ENGINE='InnoDB', COMMENT='v1.02';

@@ -1,0 +1,13 @@
+Future Methods
+--------------
+addTag.php
+assign.php
+close.php
+getSources.php
+getStates.php
+removeTag.php
+subscribe.php
+tag.php
+unsubscribe.php
+
+

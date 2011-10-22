@@ -1,0 +1,5 @@
+#
+# This file will upgrade the database table businesses to version 1.02.
+#
+ALTER TABLE bugs CHANGE COLUMN name subject varchar(140) not null;
+ALTER TABLE bugs COMMENT='v1.02';

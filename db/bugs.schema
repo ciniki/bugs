@@ -1,0 +1,57 @@
+#
+# Description
+# -----------
+# This table is based on threading functions available in the core.
+#
+# Fields
+# ------
+# id:				The thread ID.
+# business_id:		The business the thread is for.
+# user_id:			The user who created the bug.
+# subject:			The thread subject/name/question/header/title/etc...
+# state:			The current state of the thread, which should be in a 
+#					customer friendly format.
+#					
+#					- Open
+#					- Closed
+#					
+# source:			Where the thread was created from: ciniki-manage, Website, etc.
+#
+#					Bug Examples:
+#					_ ciniki-manage
+#					_ website
+#
+#					ciniki-manage Help Question and Answers:
+#					_ ciniki-manage
+#
+#					Business Bug Tracking
+#					_ 3rdParyApp
+#
+# source_link:		This file is an ID from the calling system.  So, if called from
+#					ciniki-manage to insert a thread, then the source is ciniki-manage, and source_link could be the
+#					the menu UID where the thread was started.
+#
+# options:			The options available for a thread.
+#
+#					_ 0x01 - notify creator, if in bug_users table.
+#					_ 0x02 - notify followers, if in bug_users table.
+#					_ 0x04 - 
+#					_ 0x08 - 
+#
+# date_added:		The date and time the thread was added.
+# last_updated:		The date and time the thread was last updated.
+#
+create table bugs (
+	id int not null auto_increment,
+	business_id int not null,
+	user_id int not null,
+	subject varchar(140) not null,
+	state varchar(50) not null,
+	source varchar(50) not null,
+	source_link varchar(100) not null,
+	options tinyint unsigned not null,
+	date_added datetime not null,
+	last_updated datetime not null,
+	primary key (id),
+	index (business_id, user_id, state, source)
+) ENGINE='InnoDB', COMMENT='v1.02';

@@ -1,0 +1,15 @@
+#
+# Description
+# -----------
+# This table is based on threading functions available in the core.
+#
+# Fields
+# ------
+# bug_id:		The thread to attached the tag to.
+# tag:				The tag attached to the thread.
+#
+create table bug_tags (
+	bug_id int not null,
+	tag varchar(50) not null,
+	primary key (bug_id, tag)
+) ENGINE='InnoDB', COMMENT='v1.01';
