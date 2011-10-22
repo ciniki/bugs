@@ -19,7 +19,7 @@
 // Returns
 // -------
 // <bugs>
-//		<bug id="1" user_id="1" subject="The bug subject" state="Open" source="cinikii" source_link="mapp.menu.businesses" age="2 days" updated_age="1 day" />
+//		<bug id="1" user_id="1" subject="The bug subject" state="Open" source="ciniki-manage" source_link="mapp.menu.businesses" age="2 days" updated_age="1 day" />
 // </bugs>
 // <users>
 // 		<1>

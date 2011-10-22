@@ -13,7 +13,7 @@
 // auth_token:
 // business_id: 		The business the bug is attached to.
 // state:				The state to retrieve the bugs for (Open or Closed).
-// source:				The source of bugs to get ('cinikii')
+// source:				The source of bugs to get ('ciniki-manage')
 // 
 // name:				The very brief bug description.
 // bug_text:			(optional) The longer description or additional details for the bug.
