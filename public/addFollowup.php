@@ -36,14 +36,14 @@ function ciniki_bugs_addFollowup($ciniki) {
 	$args = $rc['args'];
 	
 	//
-	// Get the module options
+	// Get the module settings
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/bugs/private/getOptions.php');
-	$rc = ciniki_bugs_getOptions($ciniki, $args['business_id'], 'ciniki.bugs.addFollowup');
+	require_once($ciniki['config']['core']['modules_dir'] . '/bugs/private/getSettings.php');
+	$rc = ciniki_bugs_getSettings($ciniki, $args['business_id'], 'ciniki.bugs.addFollowup');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
-	$options = $rc['options'];
+	$settings = $rc['settings'];
 
 	//
 	// Make sure this module is activated, and
@@ -107,18 +107,24 @@ function ciniki_bugs_addFollowup($ciniki) {
 	}
 
 	//
-	// FIXME: Notify the other users on this thread there was an update.
-	//
-	// ciniki_core_threadNotifyUsers($ciniki, 'bugs', 'bug_users', 'followup', 
-	//
-
-	//
 	// Commit the changes
 	//
 	$rc = ciniki_core_dbTransactionCommit($ciniki, 'bugs');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
+
+	//
+	// Notify the other users on this thread there was an update.
+	//
+	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadNotifyUsers.php');
+	$rc = ciniki_core_threadNotifyUsers($ciniki, 'bugs', 'bug_users', 'bug', $args['bug_id'], 0x01, 
+		'Bug #' . $args['bug_id'], 
+		$ciniki['session']['user']['display_name'] . " responsed:\n"
+			. "\n"
+			. $args['content'] 
+			. "\n\n"
+		);
 
 	return array('stat'=>'ok');
 	

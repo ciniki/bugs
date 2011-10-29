@@ -35,14 +35,14 @@ function ciniki_bugs_close($ciniki) {
 	$args = $rc['args'];
 	
 	//
-	// Get the module options
+	// Get the module settings
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/bugs/private/getOptions.php');
-	$rc = ciniki_bugs_getOptions($ciniki, $args['business_id'], 'ciniki.bugs.close');
+	require_once($ciniki['config']['core']['modules_dir'] . '/bugs/private/getSettings.php');
+	$rc = ciniki_bugs_getSettings($ciniki, $args['business_id'], 'ciniki.bugs.close');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
-	$options = $rc['options'];
+	$settings = $rc['settings'];
 
 	//
 	// Make sure this module is activated, and

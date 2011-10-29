@@ -21,6 +21,10 @@
 //
 function ciniki_bugs_add($ciniki) {
 	//
+	// Track if the submitter should be emailed, if submitter is owner, we don't want to email twice
+	// 
+	$email_submitter = 'yes';
+	//
 	// Find all the required and optional arguments
 	//
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/prepareArgs.php');
@@ -31,6 +35,7 @@ function ciniki_bugs_add($ciniki) {
 		'subject'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No subject specified'), 
 		'source'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>''), 
 		'source_link'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>''), 
+		'followup'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No follow up specified'), 
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -38,14 +43,14 @@ function ciniki_bugs_add($ciniki) {
 	$args = $rc['args'];
 	
 	//
-	// Get the module options
+	// Get the module settings
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/bugs/private/getOptions.php');
-	$rc = ciniki_bugs_getOptions($ciniki, $args['business_id'], 'ciniki.bugs.add');
+	require_once($ciniki['config']['core']['modules_dir'] . '/bugs/private/getSettings.php');
+	$rc = ciniki_bugs_getSettings($ciniki, $args['business_id'], 'ciniki.bugs.add');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
-	$options = $rc['options'];
+	$settings = $rc['settings'];
 
 	//
 	// Make sure this module is activated, and
@@ -107,7 +112,7 @@ function ciniki_bugs_add($ciniki) {
 	
 	//
 	// Attach the user to the bug_users as a follower
-	// $ciniki, $module, $prefix, {$prefix}_id, options
+	// $ciniki, $module, $prefix, {$prefix}_id, settings
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadAddFollower.php');
 	$rc = ciniki_core_threadAddFollower($ciniki, 'bugs', 'bug_users', 'bug', $bug_id, $ciniki['session']['user']['id']);
 	if( $rc['stat'] != 'ok' ) {
@@ -116,20 +121,9 @@ function ciniki_bugs_add($ciniki) {
 	}
 
 	//
-	// FIXME: Check the options to see if there's anybody who should be auto attached and emailed
-	//
-	if( isset($options['bugs.options.notify_owners']) && $options['bugs.options.notify_owners'] == 'yes' ) {
-		//
-		//	FIXME: Email the owners a bug was added to the system.
-		//
-		//  Not sure if this is needed, could just add users from group bug tracking
-		//
-	}
-
-	//
 	// FIXME: Attach business users who are bug trackers
 	//
-	if( isset($options['bugs.options.attach_group_users']) && $options['bugs.options.attach_group_users'] == 'yes' ) {
+	if( isset($settings['add.attach.group.users']) && $settings['add.attach.group.users'] == 'yes' ) {
 		//
 		// Select the users attached to the business and bug tracking module
 		//
@@ -153,7 +147,48 @@ function ciniki_bugs_add($ciniki) {
 		return $rc;
 	}
 
+	//
+	// FIXME: Check the settings to see if there's anybody who should be auto attached and emailed
+	//
+	if( isset($settings['add.notify.owners']) && $settings['add.notify.owners'] == 'yes' ) {
+		require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQueryList.php');
+		require_once($ciniki['config']['core']['modules_dir'] . '/users/private/emailUser.php');
+		//
+		//	Email the owners a bug was added to the system.
+		//
+		$strsql = "SELECT user_id FROM business_users "
+			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND (groups & 0x01) > 0 ";
+		$rc = ciniki_core_dbQueryList($ciniki, $strsql, $module, 'user_ids', 'user_id');
+		if( $rc['stat'] != 'ok' || !isset($rc['user_ids']) || !is_array($rc['user_ids']) ) {
+			return array('stat'=>'fail', 'err'=>array('code'=>'992', 'msg'=>'Unable to find users', 'err'=>$rc['err']));
+		}
+		
+		foreach($rc['user_ids'] as $user_id) {
+			// 
+			// Don't email the submitter, they will get a separate email
+			//
+			if( $user_id != $ciniki['session']['user']['id'] ) {
+				error_log($user_id . ' -- ' . $ciniki['session']['user']['id']);
+				$rc = ciniki_users_emailUser($ciniki, $user_id, 
+					'Bug #' . $bug_id,
+						$args['followup'] 
+						. "\n\n"
+					);
+			}
+		}
+	}
+
+	//
+	// Send an email to the person who submitted the bug, so they know it has been received
+	//
+	if( $email_submitter == 'yes' ) {
+		$rc = ciniki_users_emailUser($ciniki, $ciniki['session']['user']['id'], 
+			'Bug #' . $bug_id,
+				'Thank you for submitting a bug.  I have alerted the approriate people and we will look into it.'
+			);
+	}
+
 	return array('stat'=>'ok', 'id'=>$bug_id);
-	
 }
 ?>
