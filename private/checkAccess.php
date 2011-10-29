@@ -56,8 +56,10 @@ function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_
 	//
 	$rules = array();
 	if( isset($rulesets[$ruleset]['methods']) && isset($rulesets[$ruleset]['methods'][$method]) ) {
+		// If there is a specific ruleset for the requested method
 		$rules = $rulesets[$ruleset]['methods'][$method];
 	} elseif( isset($rulesets[$ruleset]['default']) ) {
+		// The default ruleset for all methods if not specified
 		$rules = $rulesets[$ruleset]['default'];
 	} else {
 		return array('stat'=>'fail', 'err'=>array('code'=>'205', 'msg'=>'Access denied.'));

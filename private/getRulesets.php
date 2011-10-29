@@ -88,14 +88,18 @@ function ciniki_bugs_getRulesets($ciniki) {
 				),
 			'default'=>array('business_group'=>0x0401),
 			'methods'=>array(
+				// Only business users assigned to bugs group, or the owner can call these methods
+				// Employee's not in the bugs group can't call these methods
 				'ciniki.bugs.assign'=>array('business_group'=>0x0401),
 				'ciniki.bugs.close'=>array('business_group'=>0x0401),
 				'ciniki.bugs.removeTag'=>array('business_group'=>0x0401),
 
+				// any customer of the business, or employee or the owner
+				// employee's don't have to be in the bugs group to call these methods, but it's also allowed
 				'ciniki.bugs.add'=>array('customer'=>'any', 'business_group'=>0x0403),
 				'ciniki.bugs.addFollowup'=>array('customer'=>'any', 'business_group'=>0x0403),		
 				'ciniki.bugs.getFollowups'=>array('customer'=>'any', 'business_group'=>0x0403),
-				'ciniki.bugs.getList'=>array('customer'=>'any', 'business_group'=>0x0403),
+				'ciniki.bugs.list'=>array('customer'=>'any', 'business_group'=>0x0403),
 				'ciniki.bugs.get'=>array('customer'=>'any', 'business_group'=>0x0403),
 				'ciniki.bugs.getSources'=>array('customer'=>'any', 'business_group'=>0x0403),
 				'ciniki.bugs.getStates'=>array('customer'=>'any', 'business_group'=>0x0403),

@@ -27,7 +27,7 @@
 //		</1>
 // </users>
 //
-function ciniki_bugs_getList($ciniki) {
+function ciniki_bugs_list($ciniki) {
 	//
 	// Find all the required and optional arguments
 	//
@@ -49,7 +49,7 @@ function ciniki_bugs_getList($ciniki) {
 	// Get the module options
 	//
 	require_once($ciniki['config']['core']['modules_dir'] . '/bugs/private/getOptions.php');
-	$rc = ciniki_bugs_getOptions($ciniki, $args['business_id'], 'ciniki.bugs.getList');
+	$rc = ciniki_bugs_getOptions($ciniki, $args['business_id'], 'ciniki.bugs.list');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
@@ -60,7 +60,7 @@ function ciniki_bugs_getList($ciniki) {
 	// check permission to run this function for this business
 	//
 	require_once($ciniki['config']['core']['modules_dir'] . '/bugs/private/checkAccess.php');
-	$rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.getList', 0, 0);
+	$rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.list', 0, 0);
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}

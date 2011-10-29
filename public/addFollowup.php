@@ -94,6 +94,19 @@ function ciniki_bugs_addFollowup($ciniki) {
 	}
 
 	//
+	// Update the last updated of the main thread
+	//
+	$strsql = "UPDATE bugs SET last_updated = UTC_TIMESTAMP() "
+		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' "
+		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "";
+	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'bugs');
+	if( $rc['stat'] != 'ok' ) {
+		ciniki_core_dbTransactionRollback($ciniki, 'bugs');
+		return $rc;
+	}
+
+	//
 	// FIXME: Notify the other users on this thread there was an update.
 	//
 	// ciniki_core_threadNotifyUsers($ciniki, 'bugs', 'bug_users', 'followup', 
