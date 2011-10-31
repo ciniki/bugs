@@ -2,6 +2,7 @@
 //
 // Description
 // -----------
+// This method adds a new bug report to the bugs module.
 //
 // Info
 // ----
@@ -169,10 +170,13 @@ function ciniki_bugs_add($ciniki) {
 			// Don't email the submitter, they will get a separate email
 			//
 			if( $user_id != $ciniki['session']['user']['id'] ) {
-				error_log($user_id . ' -- ' . $ciniki['session']['user']['id']);
 				$rc = ciniki_users_emailUser($ciniki, $user_id, 
 					'Bug #' . $bug_id,
-						$args['followup'] 
+						$ciniki['session']['user']['display_name'] . ' added the following bug report.'
+						. "\n\n"
+						. $args['subject']
+						. "\n\n"
+						. $args['followup'] 
 						. "\n\n"
 					);
 			}

@@ -127,6 +127,5 @@ function ciniki_bugs_addFollowup($ciniki) {
 		);
 
 	return array('stat'=>'ok');
-	
 }
 ?>
