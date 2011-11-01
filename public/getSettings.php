@@ -33,7 +33,7 @@ function ciniki_bugs_getSettings($ciniki) {
     // check permission to run this function for this business
     //  
     require_once($ciniki['config']['core']['modules_dir'] . '/bugs/private/checkAccess.php');
-    $rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.getSettings'); 
+    $rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.getSettings', 0, 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   

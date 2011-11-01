@@ -46,7 +46,7 @@ function ciniki_bugs_getSettingHistory($ciniki) {
 	// Check access to business_id as owner, or sys admin
 	//
 	require_once($ciniki['config']['core']['modules_dir'] . '/bugs/private/checkAccess.php');
-	$ac = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.getSettingHistory');
+	$ac = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.getSettingHistory', 0, 0);
 	if( $ac['stat'] != 'ok' ) {
 		return $ac;
 	}
