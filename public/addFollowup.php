@@ -115,14 +115,27 @@ function ciniki_bugs_addFollowup($ciniki) {
 	}
 
 	//
+	// Get the subject
+	//
+	$strsql = "SELECT subject "
+		. "FROM bugs "
+		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' "
+		. "";
+	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
+	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'bugs', 'bug');
+	if( $rc['stat'] != 'ok' || !isset($rc['bug']) || !is_array($rc['bug']) ) {
+		return $rc;
+	}
+	$bug = $rc['bug'];
+
+	//
 	// Notify the other users on this thread there was an update.
 	//
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadNotifyUsers.php');
 	$rc = ciniki_core_threadNotifyUsers($ciniki, 'bugs', 'bug_users', 'bug', $args['bug_id'], 0x01, 
-		'Bug #' . $args['bug_id'], 
-		$ciniki['session']['user']['display_name'] . " responsed:\n"
-			. "\n"
-			. $args['content'] 
+		$ciniki['session']['user']['display_name'] . " replied to bug #" . $args['bug_id'] . ': ' . $bug['subject'], 
+			$args['content'] 
 			. "\n\n"
 		);
 

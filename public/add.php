@@ -171,12 +171,8 @@ function ciniki_bugs_add($ciniki) {
 			//
 			if( $user_id != $ciniki['session']['user']['id'] ) {
 				$rc = ciniki_users_emailUser($ciniki, $user_id, 
-					'Bug #' . $bug_id,
-						$ciniki['session']['user']['display_name'] . ' added the following bug report.'
-						. "\n\n"
-						. $args['subject']
-						. "\n\n"
-						. $args['followup'] 
+					$ciniki['session']['user']['display_name'] . ' submitted bug #' . $bug_id . ': ' . $args['subject'],
+						$args['followup'] 
 						. "\n\n"
 					);
 			}
@@ -188,7 +184,7 @@ function ciniki_bugs_add($ciniki) {
 	//
 	if( $email_submitter == 'yes' ) {
 		$rc = ciniki_users_emailUser($ciniki, $ciniki['session']['user']['id'], 
-			'Bug #' . $bug_id,
+			'Bug #' . $bug_id . ': ' . $args['subject'] . ' submitted',
 				'Thank you for submitting a bug.  I have alerted the approriate people and we will look into it.'
 			);
 	}
