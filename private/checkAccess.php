@@ -40,14 +40,14 @@ function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_
 		return $rc;
 	}
 	if( !isset($rc['module']) || !isset($rc['module']['ruleset']) || $rc['module']['ruleset'] == '' ) {
-		return array('stat'=>'fail', 'err'=>array('code'=>'203', 'msg'=>'Access denied.'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'203', 'msg'=>'Access denied.'));
 	}
 
 	//
 	// Check to see if the ruleset is valid
 	//
 	if( !isset($rulesets[$rc['module']['ruleset']]) ) {
-		return array('stat'=>'fail', 'err'=>array('code'=>'204', 'msg'=>'Access denied.'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'204', 'msg'=>'Access denied.'));
 	}
 	$ruleset = $rc['module']['ruleset'];
 
@@ -62,7 +62,7 @@ function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_
 		// The default ruleset for all methods if not specified
 		$rules = $rulesets[$ruleset]['default'];
 	} else {
-		return array('stat'=>'fail', 'err'=>array('code'=>'205', 'msg'=>'Access denied.'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'205', 'msg'=>'Access denied.'));
 	}
 
 
@@ -157,6 +157,6 @@ function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_
 	//
 	// By default, fail
 	//
-	return array('stat'=>'fail', 'err'=>array('code'=>'207', 'msg'=>'Access denied.'));
+	return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'207', 'msg'=>'Access denied.'));
 }
 ?>

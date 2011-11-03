@@ -92,7 +92,7 @@ function ciniki_bugs_add($ciniki) {
 	}
 	$bug_id = $rc['insert_id'];
 	if( $bug_id < 1 ) {
-		return array('stat'=>'fail', 'err'=>array('code'=>'215', 'msg'=>'Internal Error', 'pmsg'=>'Unable to add bug.'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'215', 'msg'=>'Internal Error', 'pmsg'=>'Unable to add bug.'));
 	}
 
 	//
@@ -162,7 +162,7 @@ function ciniki_bugs_add($ciniki) {
 			. "AND (groups & 0x01) > 0 ";
 		$rc = ciniki_core_dbQueryList($ciniki, $strsql, $module, 'user_ids', 'user_id');
 		if( $rc['stat'] != 'ok' || !isset($rc['user_ids']) || !is_array($rc['user_ids']) ) {
-			return array('stat'=>'fail', 'err'=>array('code'=>'992', 'msg'=>'Unable to find users', 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'992', 'msg'=>'Unable to find users', 'err'=>$rc['err']));
 		}
 		
 		foreach($rc['user_ids'] as $user_id) {
