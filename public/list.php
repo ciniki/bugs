@@ -14,7 +14,6 @@
 // auth_token:
 // business_id: 		The business the bug is attached to.
 // name:				The very brief bug description.
-// bug_text:			(optional) The longer description or additional details for the bug.
 // 
 // Returns
 // -------

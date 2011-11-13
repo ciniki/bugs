@@ -93,6 +93,7 @@ function ciniki_bugs_getRulesets($ciniki) {
 				'ciniki.bugs.assign'=>array('business_group'=>0x0401),
 				'ciniki.bugs.close'=>array('business_group'=>0x0401),
 				'ciniki.bugs.removeTag'=>array('business_group'=>0x0401),
+				'ciniki.bugs.get'=>array('business_group'=>0x0403),
 
 				// any customer of the business, or employee or the owner
 				// employee's don't have to be in the bugs group to call these methods, but it's also allowed
@@ -100,7 +101,6 @@ function ciniki_bugs_getRulesets($ciniki) {
 				'ciniki.bugs.addFollowup'=>array('customer'=>'any', 'business_group'=>0x0403),		
 				'ciniki.bugs.getFollowups'=>array('customer'=>'any', 'business_group'=>0x0403),
 				'ciniki.bugs.list'=>array('customer'=>'any', 'business_group'=>0x0403),
-				'ciniki.bugs.get'=>array('customer'=>'any', 'business_group'=>0x0403),
 				'ciniki.bugs.getSources'=>array('customer'=>'any', 'business_group'=>0x0403),
 				'ciniki.bugs.getStates'=>array('customer'=>'any', 'business_group'=>0x0403),
 				'ciniki.bugs.getTags'=>array('customer'=>'any', 'business_group'=>0x0403),			
