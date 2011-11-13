@@ -59,6 +59,7 @@ function ciniki_bugs_updateSettings($ciniki) {
 	//
 	$changelog_fields = array(
 		'add.notify.owners',
+		'add.notify.sms.email',
 		'add.attach.group.users',
 		);
 	//

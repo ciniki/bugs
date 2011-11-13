@@ -160,7 +160,7 @@ function ciniki_bugs_add($ciniki) {
 		$strsql = "SELECT user_id FROM business_users "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND (groups & 0x01) > 0 ";
-		$rc = ciniki_core_dbQueryList($ciniki, $strsql, $module, 'user_ids', 'user_id');
+		$rc = ciniki_core_dbQueryList($ciniki, $strsql, 'bugs', 'user_ids', 'user_id');
 		if( $rc['stat'] != 'ok' || !isset($rc['user_ids']) || !is_array($rc['user_ids']) ) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'206', 'msg'=>'Unable to find users', 'err'=>$rc['err']));
 		}
@@ -187,6 +187,17 @@ function ciniki_bugs_add($ciniki) {
 			'Bug #' . $bug_id . ': ' . $args['subject'] . ' submitted',
 				'Thank you for submitting a bug.  I have alerted the approriate people and we will look into it.'
 			);
+	}
+
+	//
+	// Other email alerts for bug submission
+	//
+	if( isset($settings['add.notify.sms.email']) && $settings['add.notify.sms.email'] != '' ) {
+		//  
+		// The from address can be set in the config file.
+		//  
+		$headers = 'From: "' . $ciniki['config']['core']['system.email.name'] . '" <' . $ciniki['config']['core']['system.email'] . ">\r\n";
+		mail($settings['add.notify.sms.email'], 'New Bug #' . $bug_id, $args['subject'], $headers, '-f' . $ciniki['config']['core']['system.email']);	
 	}
 
 	return array('stat'=>'ok', 'id'=>$bug_id);
