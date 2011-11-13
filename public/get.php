@@ -119,7 +119,7 @@ function ciniki_bugs_get($ciniki) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'467', 'msg'=>'Unable to load bug information', 'err'=>$rc['err']));
 	}
 	$bug['followups'] = $rc['followups'];
-	array_merge($user_ids, $rc['user_ids']);
+	$user_ids = array_merge($user_ids, $rc['user_ids']);
 
 	//
 	// Get the list of users attached to the bug
@@ -132,7 +132,7 @@ function ciniki_bugs_get($ciniki) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'472', 'msg'=>'Unable to load bug information', 'err'=>$rc['err']));
 	}
 	$bug_users = $rc['users'];
-	array_merge($user_ids, $rc['user_ids']);
+	$user_ids = array_merge($user_ids, $rc['user_ids']);
 
 	//
 	// Get the users which are linked to these accounts
