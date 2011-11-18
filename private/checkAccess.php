@@ -3,10 +3,6 @@
 // Description
 // -----------
 //
-// Info
-// ----
-// Status: 			beta
-//
 // Arguments
 // ---------
 // user_id: 		The user making the request
@@ -29,18 +25,11 @@ function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_
 	//
 	$strsql = "SELECT ruleset FROM businesses, business_modules "
 		. "WHERE businesses.id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-		. "AND businesses.status = 1 "		// Business is active
+		. "AND businesses.status = 1 "														// Business is active
 		. "AND businesses.id = business_modules.business_id "
 		. "AND business_modules.package = 'ciniki' "
 		. "AND business_modules.module = 'bugs' "
 		. "";
-	error_log($strsql);
-//	$strsql = "SELECT ruleset FROM businesses, business_permissions "
-//		. "WHERE businesses.id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-//		. "AND (businesses.modules & 0x0800) = 0x0800 "
-//		. "AND businesses.id = business_permissions.business_id "
-//		. "AND business_permissions.module = 'bugs' "
-//		. "";
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'businesses', 'module');
 	if( $rc['stat'] != 'ok' ) {
