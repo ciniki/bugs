@@ -8,7 +8,7 @@
 # bug_id:		The thread to attached the tag to.
 # tag:				The tag attached to the thread.
 #
-create table bug_tags (
+create table ciniki_bug_tags (
 	bug_id int not null,
 	tag varchar(50) not null,
 	primary key (bug_id, tag)

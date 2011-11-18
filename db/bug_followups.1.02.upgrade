@@ -1,5 +1,5 @@
 #
 # This file will upgrade the database table bug_followups to version 1.02.
 #
-ALTER TABLE bug_followups CHANGE COLUMN followup_text content text;
-ALTER TABLE bug_followups COMMENT='v1.02';
+ALTER TABLE ciniki_bug_followups CHANGE COLUMN followup_text content text;
+ALTER TABLE ciniki_bug_followups COMMENT='v1.02';

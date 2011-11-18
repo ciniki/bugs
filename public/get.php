@@ -77,7 +77,7 @@ function ciniki_bugs_get($ciniki) {
 	$strsql = "SELECT id, user_id, subject, state, source, source_link, "
 		. "DATE_FORMAT(CONVERT_TZ(date_added, '+00:00', '" . ciniki_core_dbQuote($ciniki, $utc_offset) . "'), '" . ciniki_core_dbQuote($ciniki, $datetime_format) . "') AS date_added, "
 		. "DATE_FORMAT(CONVERT_TZ(last_updated, '+00:00', '" . ciniki_core_dbQuote($ciniki, $utc_offset) . "'), '" . ciniki_core_dbQuote($ciniki, $datetime_format) . "') AS last_updated "
-		. "FROM bugs "
+		. "FROM ciniki_bugs "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' "
 		. "";
@@ -109,9 +109,9 @@ function ciniki_bugs_get($ciniki) {
         . "DATE_FORMAT(date_added, '" . ciniki_core_dbQuote($ciniki, $datetime_format) . "') as date_added, "
         . "CAST(UNIX_TIMESTAMP(UTC_TIMESTAMP())-UNIX_TIMESTAMP(date_added) as DECIMAL(12,0)) as age, "
 		. "content "
-		. "FROM bug_followups "
-        . "WHERE bug_followups.bug_id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' "
-		. "ORDER BY bug_followups.date_added ASC "
+		. "FROM ciniki_bug_followups "
+        . "WHERE ciniki_bug_followups.bug_id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' "
+		. "ORDER BY ciniki_bug_followups.date_added ASC "
         . ""; 
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbRspQueryPlusUserIDs.php');
 	$rc = ciniki_core_dbRspQueryPlusUserIDs($ciniki, $strsql, 'bugs', 'followups', 'followup', array('stat'=>'ok', 'followups'=>array(), 'user_ids'=>array()));
@@ -125,7 +125,7 @@ function ciniki_bugs_get($ciniki) {
 	// Get the list of users attached to the bug
 	//
 	$strsql = "SELECT bug_id, user_id, perms "
-		. "FROM bug_users "
+		. "FROM ciniki_bug_users "
 		. "WHERE bug_id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' ";
 	$rc = ciniki_core_dbRspQueryPlusUserIDs($ciniki, $strsql, 'bugs', 'users', 'user', array('stat'=>'ok', 'users'=>array(), 'user_ids'=>array()));
 	if( $rc['stat'] != 'ok' ) {

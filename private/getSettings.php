@@ -17,5 +17,5 @@
 //
 function ciniki_bugs_getSettings($ciniki, $business_id, $method) {
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbDetailsQuery.php');
-	return ciniki_core_dbDetailsQuery($ciniki, 'bug_settings', 'business_id', $business_id, 'bugs', 'settings', '');
+	return ciniki_core_dbDetailsQuery($ciniki, 'ciniki_bug_settings', 'business_id', $business_id, 'bugs', 'settings', '');
 }

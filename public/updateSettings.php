@@ -68,7 +68,7 @@ function ciniki_bugs_updateSettings($ciniki) {
 	//
 	foreach($changelog_fields as $field) {
 		if( isset($ciniki['request']['args'][$field]) ) {
-			$strsql = "INSERT INTO bug_settings (business_id, detail_key, detail_value, date_added, last_updated) "
+			$strsql = "INSERT INTO ciniki_bug_settings (business_id, detail_key, detail_value, date_added, last_updated) "
 				. "VALUES ('" . ciniki_core_dbQuote($ciniki, $ciniki['request']['args']['business_id']) . "'"
 				. ", '" . ciniki_core_dbQuote($ciniki, $field) . "'"
 				. ", '" . ciniki_core_dbQuote($ciniki, $ciniki['request']['args'][$field]) . "'"
@@ -81,7 +81,7 @@ function ciniki_bugs_updateSettings($ciniki) {
 				ciniki_core_dbTransactionRollback($ciniki, 'bugs');
 				return $rc;
 			}
-			ciniki_core_dbAddChangeLog($ciniki, 'bugs', $args['business_id'], 'bug_settings', $field, 'detail_value', $ciniki['request']['args'][$field]);
+			ciniki_core_dbAddChangeLog($ciniki, 'bugs', $args['business_id'], 'ciniki_bug_settings', $field, 'detail_value', $ciniki['request']['args'][$field]);
 		}
 	}
 

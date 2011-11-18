@@ -23,12 +23,12 @@ function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_
 	// Check the business is active
 	// Get the ruleset for this module
 	//
-	$strsql = "SELECT ruleset FROM businesses, business_modules "
-		. "WHERE businesses.id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-		. "AND businesses.status = 1 "														// Business is active
-		. "AND businesses.id = business_modules.business_id "
-		. "AND business_modules.package = 'ciniki' "
-		. "AND business_modules.module = 'bugs' "
+	$strsql = "SELECT ruleset FROM ciniki_businesses, ciniki_business_modules "
+		. "WHERE ciniki_businesses.id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+		. "AND ciniki_businesses.status = 1 "														// Business is active
+		. "AND ciniki_businesses.id = ciniki_business_modules.business_id "
+		. "AND ciniki_business_modules.package = 'ciniki' "
+		. "AND ciniki_business_modules.module = 'bugs' "
 		. "";
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'businesses', 'module');
@@ -75,7 +75,7 @@ function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_
 		// Compare the session users bitmask, with the bitmask specified in the rules
 		// If when OR'd together, any bits are set, they have access.
 		//
-		$strsql = sprintf("SELECT business_id, user_id FROM business_users "
+		$strsql = sprintf("SELECT business_id, user_id FROM ciniki_business_users "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "AND user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' "
 			. "AND (groups & 0x%x) > 0 ", ciniki_core_dbQuote($ciniki, $rules['business_group']));
@@ -99,10 +99,10 @@ function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_
 	// any active business.  This allows them to submit bugs via ciniki-manage.
 	//
 	if( isset($rules['customer']) && $rules['customer'] == 'any' && $ciniki['config']['core']['master_business_id'] == $business_id ) {
-		$strsql = "SELECT user_id FROM business_users, businesses "
-			. "WHERE business_users.user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' "
-			. "AND business_users.business_id = businesses.id "
-			. "AND businesses.status = 1 ";
+		$strsql = "SELECT user_id FROM ciniki_business_users, ciniki_businesses "
+			. "WHERE ciniki_business_users.user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' "
+			. "AND ciniki_business_users.business_id = ciniki_businesses.id "
+			. "AND ciniki_businesses.status = 1 ";
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'businesses', 'user');
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;
@@ -117,7 +117,7 @@ function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_
 	//
 	if( isset($rules['customer']) && $rules['customer'] == 'any' ) {
 		// FIXME: finish, there is currently no link between customers and users.  When that is in place, this will work.
-	//	$strsql = "SELECT * FROM customers "
+	//	$strsql = "SELECT * FROM ciniki_customers "
 	//		. "WHERE customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "'"
 	//		. "AND customers.user_id = ";
 	//	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'businesses', 'user');
@@ -136,10 +136,10 @@ function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_
 	}
 
 	if( isset($rules['customer']) && $rules['customer'] == 'bug_user' ) {
-		$strsql = "SELECT bug_users.user_id FROM bugs, bug_users "
-			. "WHERE bugs.id = '" . ciniki_core_dbQuote($ciniki, $bug_id) . "' "
-			. "AND bugs.id = bug_users.bug_id "
-			. "AND bug_users.user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
+		$strsql = "SELECT ciniki_bug_users.user_id FROM ciniki_bugs, ciniki_bug_users "
+			. "WHERE ciniki_bugs.id = '" . ciniki_core_dbQuote($ciniki, $bug_id) . "' "
+			. "AND ciniki_bugs.id = ciniki_bug_users.bug_id "
+			. "AND ciniki_bug_users.user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'bugs', 'user');
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;

@@ -76,7 +76,7 @@ function ciniki_bugs_addFollowup($ciniki) {
 	// Add a followup 
 	//
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadAddFollowup.php');
-	$rc = ciniki_core_threadAddFollowup($ciniki, 'bugs', 'bug_followups', 'bug', $args['bug_id'], $args);
+	$rc = ciniki_core_threadAddFollowup($ciniki, 'bugs', 'ciniki_bug_followups', 'bug', $args['bug_id'], $args);
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'bugs');
 		return $rc;
@@ -87,7 +87,7 @@ function ciniki_bugs_addFollowup($ciniki) {
 	// will make sure the flag is set.
 	// 
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadAddFollower.php');
-	$rc = ciniki_core_threadAddFollower($ciniki, 'bugs', 'bug_users', 'bug', $args['bug_id'], $ciniki['session']['user']['id']);
+	$rc = ciniki_core_threadAddFollower($ciniki, 'bugs', 'ciniki_bug_users', 'bug', $args['bug_id'], $ciniki['session']['user']['id']);
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'bugs');
 		return $rc;
@@ -96,7 +96,7 @@ function ciniki_bugs_addFollowup($ciniki) {
 	//
 	// Update the last updated of the main thread
 	//
-	$strsql = "UPDATE bugs SET last_updated = UTC_TIMESTAMP() "
+	$strsql = "UPDATE ciniki_bugs SET last_updated = UTC_TIMESTAMP() "
 		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' "
 		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "";
@@ -118,7 +118,7 @@ function ciniki_bugs_addFollowup($ciniki) {
 	// Get the subject
 	//
 	$strsql = "SELECT subject "
-		. "FROM bugs "
+		. "FROM ciniki_bugs "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' "
 		. "";
@@ -133,7 +133,7 @@ function ciniki_bugs_addFollowup($ciniki) {
 	// Notify the other users on this thread there was an update.
 	//
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadNotifyUsers.php');
-	$rc = ciniki_core_threadNotifyUsers($ciniki, 'bugs', 'bug_users', 'bug', $args['bug_id'], 0x01, 
+	$rc = ciniki_core_threadNotifyUsers($ciniki, 'bugs', 'ciniki_bug_users', 'bug', $args['bug_id'], 0x01, 
 		$ciniki['session']['user']['display_name'] . " replied to bug #" . $args['bug_id'] . ': ' . $bug['subject'], 
 			$args['content'] 
 			. "\n\n"

@@ -76,7 +76,7 @@ function ciniki_bugs_close($ciniki) {
 	//
 	// Close the bug
 	//
-	$strsql = "UPDATE bugs SET state = 'Closed', last_updated = UTC_TIMESTAMP() "
+	$strsql = "UPDATE ciniki_bugs SET state = 'Closed', last_updated = UTC_TIMESTAMP() "
 		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' "
 		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "";
@@ -87,7 +87,7 @@ function ciniki_bugs_close($ciniki) {
 	}
 
 	$rc = ciniki_core_dbAddChangeLog($ciniki, 'bugs', $args['business_id'],
-		'bugs', $args['bug_id'], 'state', 'Closed');
+		'ciniki_bugs', $args['bug_id'], 'state', 'Closed');
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'bugs');
 		return $rc;
@@ -96,7 +96,7 @@ function ciniki_bugs_close($ciniki) {
 	//
 	// FIXME: Notify the other users on this thread there was an update.
 	//
-	// ciniki_core_threadNotifyUsers($ciniki, 'bugs', 'bug_users', 'followup', 
+	// ciniki_core_threadNotifyUsers($ciniki, 'bugs', 'ciniki_bug_users', 'followup', 
 	//
 
 	//

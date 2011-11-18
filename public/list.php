@@ -72,6 +72,6 @@ function ciniki_bugs_list($ciniki) {
 	// $args['user_id'] = $ciniki['session']['user']['id'];
 	
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadGetList.php');
-	return ciniki_core_threadGetList($ciniki, 'bugs', 'bugs', 'bugs', 'bug', $args);
+	return ciniki_core_threadGetList($ciniki, 'bugs', 'ciniki_bugs', 'bugs', 'bug', $args);
 }
 ?>

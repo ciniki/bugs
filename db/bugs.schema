@@ -41,7 +41,7 @@
 # date_added:		The date and time the thread was added.
 # last_updated:		The date and time the thread was last updated.
 #
-create table bugs (
+create table ciniki_bugs (
 	id int not null auto_increment,
 	business_id int not null,
 	user_id int not null,

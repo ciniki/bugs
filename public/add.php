@@ -85,7 +85,7 @@ function ciniki_bugs_add($ciniki) {
 	// Add the bug to the database using the thread libraries
 	//
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadAdd.php');
-	$rc = ciniki_core_threadAdd($ciniki, 'bugs', 'bugs', $args);
+	$rc = ciniki_core_threadAdd($ciniki, 'bugs', 'ciniki_bugs', $args);
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'bugs');
 		return $rc;
@@ -100,7 +100,7 @@ function ciniki_bugs_add($ciniki) {
 	//
 	if( isset($ciniki['request']['args']['followup']) && $ciniki['request']['args']['followup'] != '' ) {
 		require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadAddFollowup.php');
-		$rc = ciniki_core_threadAddFollowup($ciniki, 'bugs', 'bug_followups', 'bug', $bug_id, array(
+		$rc = ciniki_core_threadAddFollowup($ciniki, 'bugs', 'ciniki_bug_followups', 'bug', $bug_id, array(
 			'user_id'=>$ciniki['session']['user']['id'],
 			'bug_id'=>$bug_id,
 			'content'=>$ciniki['request']['args']['followup']
@@ -112,10 +112,10 @@ function ciniki_bugs_add($ciniki) {
 	}
 	
 	//
-	// Attach the user to the bug_users as a follower
+	// Attach the user to the ciniki_bug_users as a follower
 	// $ciniki, $module, $prefix, {$prefix}_id, settings
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadAddFollower.php');
-	$rc = ciniki_core_threadAddFollower($ciniki, 'bugs', 'bug_users', 'bug', $bug_id, $ciniki['session']['user']['id']);
+	$rc = ciniki_core_threadAddFollower($ciniki, 'bugs', 'ciniki_bug_users', 'bug', $bug_id, $ciniki['session']['user']['id']);
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'bugs');
 		return $rc;
@@ -128,7 +128,7 @@ function ciniki_bugs_add($ciniki) {
 		//
 		// Select the users attached to the business and bug tracking module
 		//
-		$strsql = "SELECT user_id FROM business_users "
+		$strsql = "SELECT user_id FROM ciniki_business_users "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND (groups & 0x400) = 0x0400 ";
 		
@@ -157,7 +157,7 @@ function ciniki_bugs_add($ciniki) {
 		//
 		//	Email the owners a bug was added to the system.
 		//
-		$strsql = "SELECT user_id FROM business_users "
+		$strsql = "SELECT user_id FROM ciniki_business_users "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND (groups & 0x01) > 0 ";
 		$rc = ciniki_core_dbQueryList($ciniki, $strsql, 'bugs', 'user_ids', 'user_id');
