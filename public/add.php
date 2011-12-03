@@ -196,8 +196,13 @@ function ciniki_bugs_add($ciniki) {
 		//  
 		// The from address can be set in the config file.
 		//  
-		$headers = 'From: "' . $ciniki['config']['core']['system.email.name'] . '" <' . $ciniki['config']['core']['system.email'] . ">\r\n";
-		mail($settings['add.notify.sms.email'], 'New Bug #' . $bug_id, $args['subject'], $headers, '-f' . $ciniki['config']['core']['system.email']);	
+		$emails = preg_split('/,/', $settings['add.notify.sms.email']);
+		foreach($emails as $email) {
+			if( $email != '' ) {
+				$headers = 'From: "' . $ciniki['config']['core']['system.email.name'] . '" <' . $ciniki['config']['core']['system.email'] . ">\r\n";
+				mail($settings['add.notify.sms.email'], 'New Bug #' . $bug_id, $args['subject'], $headers, '-f' . $ciniki['config']['core']['system.email']);	
+			}
+		}
 	}
 
 	return array('stat'=>'ok', 'id'=>$bug_id);
