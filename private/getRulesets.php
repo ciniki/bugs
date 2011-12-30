@@ -18,23 +18,13 @@
 function ciniki_bugs_getRulesets($ciniki) {
 
 	//
-	// Permissions can be in the form of=> 
-	//		- owners, any employee in the group 0x0001 (owner) in business_users.
-	//		- group, any employee in the group 0x0400 (bug tracker) in business_users.
-	//		- employee, any employee in the group 0x0002 (employee) in business_users.
-	//		- employees, customer, customers
-	//
-	// - business_group - 0x0401, (any owners) or (employees in group Bug Tracker)
-	// - business_group - 0x0403, (any owners) or (any employees) or (employees in group Bug Tracker)
-	// - business_group - blank/non-existent, ignored
-	//
-	// business_group rules are OR'd together with customers rules
+	// permission_groups rules are OR'd together with customers rules
 	//
 	// - customers - 'any', (any customers of the business)
 	// - customers - 'self', (the session user_id must be the same as requested user_id)
 	// - customers - 'bug_user', (the session user_id must be the same as user_id who started the bug)
 	//
-	// *note* A function can only be allowed to customers, if there is no business_group rule.
+	// *note* A function can only be allowed to customers, if there is no permission_groups rule.
 	//
 
 	return array(
@@ -66,7 +56,7 @@ function ciniki_bugs_getRulesets($ciniki) {
 				'employees'=>'all tasks on all bugs if assigned to group Bug Tracking.',
 				'customers'=>'no access.'
 				),
-			'default'=>array('business_group'=>0x0401),
+			'default'=>array('permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),
 			'methods'=>array()
 			),
 
@@ -86,36 +76,36 @@ function ciniki_bugs_getRulesets($ciniki) {
 				'employees'=>'only those assigned to the Bug Tracking group, all tasks on all bugs.',
 				'customers'=>'add, followup, view all bugs.'
 				),
-			'default'=>array('business_group'=>0x0401),
+			'default'=>array('permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),
 			'methods'=>array(
 				// Only business users assigned to bugs group, or the owner can call these methods
 				// Employee's not in the bugs group can't call these methods
-				'ciniki.bugs.assign'=>array('business_group'=>0x0401),
-				'ciniki.bugs.close'=>array('business_group'=>0x0401),
-				'ciniki.bugs.removeTag'=>array('business_group'=>0x0401),
-				'ciniki.bugs.get'=>array('business_group'=>0x0403),
+				'ciniki.bugs.assign'=>array('permission_groups'=>array('ciniki.owners', 'ciniki.bugs')),
+				'ciniki.bugs.close'=>array('permission_groups'=>array('ciniki.owners', 'ciniki.bugs')),
+				'ciniki.bugs.removeTag'=>array('permission_groups'=>array('ciniki.owners', 'ciniki.bugs')),
+				'ciniki.bugs.get'=>array('permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),
 
 				// any customer of the business, or employee or the owner
 				// employee's don't have to be in the bugs group to call these methods, but it's also allowed
-				'ciniki.bugs.add'=>array('customer'=>'any', 'business_group'=>0x0403),
-				'ciniki.bugs.addFollowup'=>array('customer'=>'any', 'business_group'=>0x0403),		
-				'ciniki.bugs.getFollowups'=>array('customer'=>'any', 'business_group'=>0x0403),
-				'ciniki.bugs.list'=>array('customer'=>'any', 'business_group'=>0x0403),
-				'ciniki.bugs.getSources'=>array('customer'=>'any', 'business_group'=>0x0403),
-				'ciniki.bugs.getStates'=>array('customer'=>'any', 'business_group'=>0x0403),
-				'ciniki.bugs.getTags'=>array('customer'=>'any', 'business_group'=>0x0403),			
+				'ciniki.bugs.add'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),
+				'ciniki.bugs.addFollowup'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),		
+				'ciniki.bugs.getFollowups'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),
+				'ciniki.bugs.list'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),
+				'ciniki.bugs.getSources'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),
+				'ciniki.bugs.getStates'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),
+				'ciniki.bugs.getTags'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),			
 
 				// Any customer can subscribe to follow a bug
-				'ciniki.bugs.subscribe'=>array('customer'=>'any', 'business_group'=>0x0403),		
+				'ciniki.bugs.subscribe'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),		
 
 				// Only if the customer started the bug, can they add a tag.
 				// Owners and employees in the Bug tracking group can add tags to any bug
-				'ciniki.bugs.addTag'=>array('customer'=>'bug_user', 'business_group'=>0x0403),	
+				'ciniki.bugs.addTag'=>array('customer'=>'bug_user', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),	
 
 				// Any customer can unsubscribe themselves from a thread
-				'ciniki.bugs.unsubscribe'=>array('customer'=>'self', 'business_group'=>0x0403), 	
+				'ciniki.bugs.unsubscribe'=>array('customer'=>'self', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')), 	
 
-				'ciniki.bugs.search'=>array('customer'=>'any', 'business_group'=>0x0403),
+				'ciniki.bugs.search'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),
 				)
 			),
 	);

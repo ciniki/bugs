@@ -66,30 +66,28 @@ function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_
 	// Apply the rules.  Any matching rule will allow access.
 	//
 
-
 	//
-	// If business_group specified, check the session user in the business_users table.
+	// If permissions_group specified, check the session user in the business_users table.
 	//
-	if( isset($rules['business_group']) && $rules['business_group'] > 0 ) {
+	if( isset($rules['permission_groups']) && $rules['permission_groups'] > 0 ) {
 		//
-		// Compare the session users bitmask, with the bitmask specified in the rules
-		// If when OR'd together, any bits are set, they have access.
+		// If the user is attached to the business AND in the one of the accepted permissions group, they will be granted access
 		//
-		$strsql = sprintf("SELECT business_id, user_id FROM ciniki_business_users "
+		$strsql = "SELECT business_id, user_id FROM ciniki_business_users "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "AND user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' "
-			. "AND (groups & 0x%x) > 0 ", ciniki_core_dbQuote($ciniki, $rules['business_group']));
+			. "AND CONCAT_WS('.', package, permission_group) IN ('" . implode("','", $rules['permission_groups']) . "') "
+			. "";
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'businesses', 'user');
 		if( $rc['stat'] != 'ok' ) {
-			return $rc;
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'514', 'msg'=>'Access denied.', 'err'=>$rc['err']));
 		}
+		
 		//
-		// Double check business_id and user_id match, for single row returned.
+		// If the user has permission, return ok
 		//
-		if( isset($rc['user']) && isset($rc['user']['business_id']) 
-			&& $rc['user']['business_id'] == $business_id 
-			&& $rc['user']['user_id'] = $ciniki['session']['user']['id'] ) {
-			// Access Granted!
+		if( isset($rc['rows']) && isset($rc['rows'][0]) 
+			&& $rc['rows'][0]['user_id'] > 0 && $rc['rows'][0]['user_id'] == $ciniki['session']['user']['id'] ) {
 			return array('stat'=>'ok');
 		}
 	}
