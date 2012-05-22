@@ -1,0 +1,6 @@
+#
+# This file will upgrade the database table businesses to version 1.02.
+#
+ALTER TABLE ciniki_bugs ADD COLUMN type tinyint unsigned not null AFTER subject;
+ALTER TABLE ciniki_bugs ADD COLUMN category varchar(150) not null AFTER type;
+ALTER TABLE ciniki_bugs COMMENT='v1.03';

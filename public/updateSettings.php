@@ -58,9 +58,11 @@ function ciniki_bugs_updateSettings($ciniki) {
 	// The list of allowed fields for updating
 	//
 	$changelog_fields = array(
-		'add.notify.owners',
-		'add.notify.sms.email',
-		'add.attach.group.users',
+		'bugs.add.notify.owners',
+		'bugs.add.notify.sms.email',
+		'bugs.add.attach.group.users',
+		'features.add.notify.owners',
+		'features.add.attach.group.users',
 		);
 	//
 	// Check each valid setting and see if a new value was passed in the arguments for it.
