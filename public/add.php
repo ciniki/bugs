@@ -142,6 +142,7 @@ function ciniki_bugs_add($ciniki) {
 	// both a follower (above code) and assigned (below code).
 	// Add the viewed flag to be set, so it's marked as unread for new assigned users.
 	//
+	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadAddUserPerms.php');
 	if( isset($args['assigned']) && is_array($args['assigned']) ) {
 		foreach( $args['assigned'] as $user_id ) {
 			$rc = ciniki_core_threadAddUserPerms($ciniki, 'bugs', 'ciniki_bug_users', 'bug', $bug_id, $user_id, (0x02));
