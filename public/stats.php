@@ -62,8 +62,10 @@ function ciniki_bugs_stats($ciniki) {
 		return $rc;
 	}
 
-	foreach($rc['types'] as $tnum => $type) {
-		$rsp[$type['type']['type_name']] = $type['type']['categories'];
+	if( isset($rc['types']) ) {
+		foreach($rc['types'] as $tnum => $type) {
+			$rsp[$type['type']['type_name']] = $type['type']['categories'];
+		}
 	}
 
 	return $rsp;
