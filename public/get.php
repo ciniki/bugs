@@ -95,7 +95,7 @@ function ciniki_bugs_get($ciniki) {
 	// Setup arrays to store assigned users and following
 	//
 	$bug['followers'] = array();
-	$bug['assigned'] = array();
+	$bug['assigned'] = '';
 
 	//
 	// Setup the array to hold all the user_ids
@@ -161,7 +161,10 @@ function ciniki_bugs_get($ciniki) {
 		}
 		// Assigned to
 		if( ($user['user']['perms'] & 0x02) > 0 ) {
-			array_push($bug['assigned'], array('user'=>array('id'=>$user['user']['user_id'], 'display_name'=>$display_name)));
+			if( $bug['assigned'] != '' ) {
+				$bug['assigned'] .= ',';
+			}
+			$bug['assigned'] .= $user['user']['user_id'];
 		}
 	}
 

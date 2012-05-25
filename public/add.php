@@ -38,7 +38,8 @@ function ciniki_bugs_add($ciniki) {
 		'category'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>''), 
 		'source'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>''), 
 		'source_link'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>''), 
-		'followup'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No follow up specified'), 
+		'content'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No follow up specified'), 
+		'assigned'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'errmsg'=>'No assignments specified'),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -134,6 +135,21 @@ function ciniki_bugs_add($ciniki) {
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'bugs');
 		return $rc;
+	}
+
+	//
+	// Add users who were assigned.  If the creator also is assigned the atdo, then they will be 
+	// both a follower (above code) and assigned (below code).
+	// Add the viewed flag to be set, so it's marked as unread for new assigned users.
+	//
+	if( isset($args['assigned']) && is_array($args['assigned']) ) {
+		foreach( $args['assigned'] as $user_id ) {
+			$rc = ciniki_core_threadAddUserPerms($ciniki, 'bugs', 'ciniki_bug_users', 'bug', $bug_id, $user_id, (0x02));
+			if( $rc['stat'] != 'ok' ) {
+				ciniki_core_dbTransactionRollback($ciniki, 'bugs');
+				return $rc;
+			}
+		}
 	}
 
 	//
