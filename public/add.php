@@ -156,7 +156,9 @@ function ciniki_bugs_add($ciniki) {
 	//
 	// FIXME: Attach business users who are bug trackers
 	//
-	if( isset($settings['add.attach.group.users']) && $settings['add.attach.group.users'] == 'yes' ) {
+	if( ($args['type'] == 1 && isset($settings['bugs.add.attach.group.users']) && $settings['bugs.add.attach.group.users'] == 'yes')
+		|| ($args['type'] == 2 && isset($settings['features.add.attach.group.users']) && $settings['features.add.attach.group.users'] == 'yes')
+		) {
 		//
 		// Select the users attached to the business and bug tracking module
 		//
@@ -183,7 +185,9 @@ function ciniki_bugs_add($ciniki) {
 	//
 	// FIXME: Check the settings to see if there's anybody who should be auto attached and emailed
 	//
-	if( isset($settings['add.notify.owners']) && $settings['add.notify.owners'] == 'yes' ) {
+	if( ($args['type'] == 1 && isset($settings['bugs.add.notify.owners']) && $settings['bugs.add.notify.owners'] == 'yes')
+		|| ($args['type'] == 2 && isset($settings['features.add.notify.owners']) && $settings['features.add.notify.owners'] == 'yes')
+		) {
 		require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQueryList.php');
 		require_once($ciniki['config']['core']['modules_dir'] . '/users/private/emailUser.php');
 		//
@@ -217,22 +221,22 @@ function ciniki_bugs_add($ciniki) {
 	if( $email_submitter == 'yes' ) {
 		$rc = ciniki_users_emailUser($ciniki, $ciniki['session']['user']['id'], 
 			'Bug #' . $bug_id . ': ' . $args['subject'] . ' submitted',
-				'Thank you for submitting a bug.  I have alerted the approriate people and we will look into it.'
+				'Thank you for submitting a bug/feature request.  I have alerted the approriate people and we will look into it.'
 			);
 	}
 
 	//
 	// Other email alerts for bug submission
 	//
-	if( isset($settings['add.notify.sms.email']) && $settings['add.notify.sms.email'] != '' ) {
+	if( $args['type'] == 1 && isset($settings['bugs.add.notify.sms.email']) && $settings['bugs.add.notify.sms.email'] != '' ) {
 		//  
 		// The from address can be set in the config file.
 		//  
-		$emails = preg_split('/,/', $settings['add.notify.sms.email']);
+		$emails = preg_split('/,/', $settings['bugs.add.notify.sms.email']);
 		foreach($emails as $email) {
 			if( $email != '' ) {
 				$headers = 'From: "' . $ciniki['config']['core']['system.email.name'] . '" <' . $ciniki['config']['core']['system.email'] . ">\r\n";
-				mail($settings['add.notify.sms.email'], 'New Bug #' . $bug_id, $args['subject'], $headers, '-f' . $ciniki['config']['core']['system.email']);	
+				mail($settings['bugs.add.notify.sms.email'], 'New Bug #' . $bug_id, $args['subject'], $headers, '-f' . $ciniki['config']['core']['system.email']);	
 			}
 		}
 	}
