@@ -114,12 +114,12 @@ function ciniki_bugs_add($ciniki) {
 	//
 	// Add a followup if they included details
 	//
-	if( isset($ciniki['request']['args']['followup']) && $ciniki['request']['args']['followup'] != '' ) {
+	if( isset($ciniki['request']['args']['content']) && $ciniki['request']['args']['content'] != '' ) {
 		require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadAddFollowup.php');
 		$rc = ciniki_core_threadAddFollowup($ciniki, 'bugs', 'ciniki_bug_followups', 'bug', $bug_id, array(
 			'user_id'=>$ciniki['session']['user']['id'],
 			'bug_id'=>$bug_id,
-			'content'=>$ciniki['request']['args']['followup']
+			'content'=>$ciniki['request']['args']['content']
 			));
 		if( $rc['stat'] != 'ok' ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'bugs');
@@ -185,11 +185,11 @@ function ciniki_bugs_add($ciniki) {
 	//
 	// FIXME: Check the settings to see if there's anybody who should be auto attached and emailed
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/users/private/emailUser.php');
 	if( ($args['type'] == 1 && isset($settings['bugs.add.notify.owners']) && $settings['bugs.add.notify.owners'] == 'yes')
 		|| ($args['type'] == 2 && isset($settings['features.add.notify.owners']) && $settings['features.add.notify.owners'] == 'yes')
 		) {
 		require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQueryList.php');
+		require_once($ciniki['config']['core']['modules_dir'] . '/users/private/emailUser.php');
 		//
 		//	Email the owners a bug was added to the system.
 		//
@@ -219,6 +219,7 @@ function ciniki_bugs_add($ciniki) {
 	// Send an email to the person who submitted the bug, so they know it has been received
 	//
 	if( $email_submitter == 'yes' ) {
+		require_once($ciniki['config']['core']['modules_dir'] . '/users/private/emailUser.php');
 		$rc = ciniki_users_emailUser($ciniki, $ciniki['session']['user']['id'], 
 			'Bug #' . $bug_id . ': ' . $args['subject'] . ' submitted',
 				'Thank you for submitting a bug/feature request.  I have alerted the approriate people and we will look into it.'
