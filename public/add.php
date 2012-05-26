@@ -185,11 +185,11 @@ function ciniki_bugs_add($ciniki) {
 	//
 	// FIXME: Check the settings to see if there's anybody who should be auto attached and emailed
 	//
+	require_once($ciniki['config']['core']['modules_dir'] . '/users/private/emailUser.php');
 	if( ($args['type'] == 1 && isset($settings['bugs.add.notify.owners']) && $settings['bugs.add.notify.owners'] == 'yes')
 		|| ($args['type'] == 2 && isset($settings['features.add.notify.owners']) && $settings['features.add.notify.owners'] == 'yes')
 		) {
 		require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQueryList.php');
-		require_once($ciniki['config']['core']['modules_dir'] . '/users/private/emailUser.php');
 		//
 		//	Email the owners a bug was added to the system.
 		//
