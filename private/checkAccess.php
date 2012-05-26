@@ -11,41 +11,27 @@
 // -------
 //
 function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_id) {
-
 	//
-	// Load the rulesets for this module
+	// Check if the business is active and the module is enabled
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/bugs/private/getRulesets.php');
-	$rulesets = ciniki_bugs_getRuleSets($ciniki);
-
-	//
-	// Check if the module is turned on for the business
-	// Check the business is active
-	// Get the ruleset for this module
-	//
-	$strsql = "SELECT ruleset FROM ciniki_businesses, ciniki_business_modules "
-		. "WHERE ciniki_businesses.id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-		. "AND ciniki_businesses.status = 1 "														// Business is active
-		. "AND ciniki_businesses.id = ciniki_business_modules.business_id "
-		. "AND ciniki_business_modules.package = 'ciniki' "
-		. "AND ciniki_business_modules.module = 'bugs' "
-		. "";
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
-	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'businesses', 'module');
+	require_once($ciniki['config']['core']['modules_dir'] . '/businesses/private/checkModuleAccess.php');
+	$rc = ciniki_businesses_checkModuleAccess($ciniki, $business_id, 'ciniki', 'bugs');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
-	if( !isset($rc['module']) || !isset($rc['module']['ruleset']) || $rc['module']['ruleset'] == '' ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'203', 'msg'=>'Access denied.'));
+
+	if( !isset($rc['ruleset']) ) {
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'203', 'msg'=>'No permissions granted'));
 	}
+	$modules = $rc['modules'];
 
 	//
 	// Check to see if the ruleset is valid
 	//
-	if( !isset($rulesets[$rc['module']['ruleset']]) ) {
+	if( !isset($rulesets[$rc['ruleset']]) ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'204', 'msg'=>'Access denied.'));
 	}
-	$ruleset = $rc['module']['ruleset'];
+	$ruleset = $rc['ruleset'];
 
 	// 
 	// Get the rules for the specified method
