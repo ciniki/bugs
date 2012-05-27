@@ -26,6 +26,12 @@ function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_
 	$modules = $rc['modules'];
 
 	//
+	// Load the rulesets for this module
+	//
+	require_once($ciniki['config']['core']['modules_dir'] . '/bugs/private/getRulesets.php');
+	$rulesets = ciniki_bugs_getRuleSets($ciniki);
+
+	//
 	// Check to see if the ruleset is valid
 	//
 	if( !isset($rulesets[$rc['ruleset']]) ) {
