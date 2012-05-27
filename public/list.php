@@ -45,7 +45,7 @@ function ciniki_bugs_list($ciniki) {
 		return $rc;
 	}
 	$args = $rc['args'];
-	if( $args['category'] == 'Uncategorized' ) {
+	if( isset($args['category']) && $args['category'] == 'Uncategorized' ) {
 		$args['category'] = '';
 	}
 
