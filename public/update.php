@@ -17,6 +17,8 @@ function ciniki_bugs_update($ciniki) {
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
         'bug_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No ID specified'), 
 		'type'=>array('required'=>'no', 'blank'=>'no', 'errmsg'=>'No type specified'),
+		'priority'=>array('required'=>'no', 'blank'=>'no', 'errmsg'=>'No type specified', 'accepted'=>array('10','30','50')),
+		'status'=>array('required'=>'no', 'blank'=>'no', 'errmsg'=>'No type specified', 'accepted'=>array('1', '60')),
         'subject'=>array('required'=>'no', 'blank'=>'no', 'errmsg'=>'No subject specified'), 
         'category'=>array('required'=>'no', 'blank'=>'no', 'errmsg'=>'No category specified'), 
 		'assigned'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'errmsg'=>'No assignments specified'),
@@ -32,7 +34,7 @@ function ciniki_bugs_update($ciniki) {
     // check permission to run this function for this business
     //  
     require_once($ciniki['config']['core']['modules_dir'] . '/bugs/private/checkAccess.php');
-    $rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.update'); 
+    $rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.update', $args['bug_id'], $ciniki['session']['user']['id']); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -61,6 +63,8 @@ function ciniki_bugs_update($ciniki) {
 	//
 	$changelog_fields = array(
 		'type',
+		'priority',
+		'status',
 		'subject',
 		'category',
 		);

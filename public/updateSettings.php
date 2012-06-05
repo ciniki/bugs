@@ -63,6 +63,10 @@ function ciniki_bugs_updateSettings($ciniki) {
 		'bugs.add.attach.group.users',
 		'features.add.notify.owners',
 		'features.add.attach.group.users',
+		'colours.priority.10',
+		'colours.priority.30',
+		'colours.priority.50',
+		'colours.status.60',
 		);
 	//
 	// Check each valid setting and see if a new value was passed in the arguments for it.

@@ -76,7 +76,7 @@ function ciniki_bugs_close($ciniki) {
 	//
 	// Close the bug
 	//
-	$strsql = "UPDATE ciniki_bugs SET state = 'Closed', last_updated = UTC_TIMESTAMP() "
+	$strsql = "UPDATE ciniki_bugs SET status = 60, last_updated = UTC_TIMESTAMP() "
 		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' "
 		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "";
@@ -86,8 +86,7 @@ function ciniki_bugs_close($ciniki) {
 		return $rc;
 	}
 
-	$rc = ciniki_core_dbAddChangeLog($ciniki, 'bugs', $args['business_id'],
-		'ciniki_bugs', $args['bug_id'], 'state', 'Closed');
+	$rc = ciniki_core_dbAddChangeLog($ciniki, 'bugs', $args['business_id'], 'ciniki_bugs', $args['bug_id'], 'status', '60');
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'bugs');
 		return $rc;

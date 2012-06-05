@@ -14,7 +14,7 @@
 // Returns
 // -------
 // <rsp stat='ok'>
-// 	<bug id="1" user_id="2" subject="The bug subject" state="Open" source="ciniki-manage" source_link="mapp.menu.businesses" date_added="Nov 9, 2011 8:57 AM" last_updated="Nov 9, 2011 9:00 AM" />
+// 	<bug id="1" user_id="2" subject="The bug subject" priority="10" status="1" source="ciniki-manage" source_link="mapp.menu.businesses" date_added="Nov 9, 2011 8:57 AM" last_updated="Nov 9, 2011 9:00 AM" />
 // 		<followups>
 //			<followup id="2" user_id="1" content="" />
 // 		</followups>
@@ -74,7 +74,7 @@ function ciniki_bugs_get($ciniki) {
 	//
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
-	$strsql = "SELECT id, type, category, user_id, subject, state, source, source_link, "
+	$strsql = "SELECT id, type, priority, status, category, user_id, subject, source, source_link, "
 		. "DATE_FORMAT(CONVERT_TZ(date_added, '+00:00', '" . ciniki_core_dbQuote($ciniki, $utc_offset) . "'), '" . ciniki_core_dbQuote($ciniki, $datetime_format) . "') AS date_added, "
 		. "DATE_FORMAT(CONVERT_TZ(last_updated, '+00:00', '" . ciniki_core_dbQuote($ciniki, $utc_offset) . "'), '" . ciniki_core_dbQuote($ciniki, $datetime_format) . "') AS last_updated "
 		. "FROM ciniki_bugs "

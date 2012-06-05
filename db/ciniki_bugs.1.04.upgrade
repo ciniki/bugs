@@ -1,0 +1,11 @@
+#
+# This file will upgrade the database table businesses to version 1.02.
+#
+ALTER TABLE ciniki_bugs ADD COLUMN priority tinyint unsigned not null AFTER type;
+ALTER TABLE ciniki_bugs ADD COLUMN status tinyint unsigned not null AFTER priority;
+UPDATE ciniki_bugs SET status = 1 WHERE state = 'Open';
+UPDATE ciniki_bugs SET status = 60 WHERE state = 'Closed';
+ALTER TABLE ciniki_bugs DROP COLUMN state;
+CREATE INDEX priority ON ciniki_bugs (priority, status);
+UPDATE ciniki_bugs SET priority = 10;
+ALTER TABLE ciniki_bugs COMMENT='v1.04';

@@ -1,7 +1,7 @@
 #
 # Description
 # -----------
-# This table is based on threading functions available in the core.
+# The bugs table stores the main information for each bug or feature request.
 #
 # Fields
 # ------
@@ -13,6 +13,15 @@
 #
 #					1 - bug
 #					2 - feature
+#
+# priority:			0 - unknown
+#					10 - low
+#					30 - medium
+#					50 - high
+#
+# status:			0 - unknown
+#					1 - Open
+#					60 - Closed/Completed
 #
 # category:			The category for the bug or feature.
 #
@@ -45,8 +54,8 @@
 #					_ 0x04 - 
 #					_ 0x08 - 
 #
-# date_added:		The date and time the thread was added.
-# last_updated:		The date and time the thread was last updated.
+# date_added:		The UTC date and time the thread was added.
+# last_updated:		The UTC date and time the thread was last updated.
 #
 create table ciniki_bugs (
 	id int not null auto_increment,
@@ -54,6 +63,8 @@ create table ciniki_bugs (
 	user_id int not null,
 	subject varchar(140) not null,
 	type tinyint unsigned not null,
+	priority tinyint unsigned not null,
+	status tinyint unsigned not null,
 	category varchar(150) not null,
 	state varchar(50) not null,
 	source varchar(50) not null,
@@ -62,5 +73,6 @@ create table ciniki_bugs (
 	date_added datetime not null,
 	last_updated datetime not null,
 	primary key (id),
-	index (business_id, user_id, state, source)
-) ENGINE='InnoDB', COMMENT='v1.03';
+	index (business_id, user_id, state, source),
+	index (priority, status)
+) ENGINE='InnoDB', COMMENT='v1.04';

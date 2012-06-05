@@ -47,7 +47,7 @@ function ciniki_bugs_stats($ciniki) {
 		. "IF(category='', 'Uncategorized', category) AS name "
 		. "FROM ciniki_bugs "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND state = 'Open' "
+		. "AND status = 1 "
 		. "GROUP BY ciniki_bugs.type, ciniki_bugs.category "
 		. "";
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'artcatalog', array(

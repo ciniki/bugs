@@ -32,9 +32,11 @@ function ciniki_bugs_add($ciniki) {
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
 		'type'=>array('required'=>'no', 'blank'=>'no', 'default'=>'1', 'errmsg'=>'No type specified'), 
-		'state'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'Must specify Open or Closed',
-			'accepted'=>array('Open', 'Closed')), 
+//		'state'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'Must specify Open or Closed',
+//			'accepted'=>array('Open', 'Closed')), 
 		'subject'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No subject specified'), 
+		'priority'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>''), 
+		'status'=>array('required'=>'no', 'default'=>'1', 'blank'=>'no', 'errmsg'=>''), 
 		'category'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>''), 
 		'source'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>''), 
 		'source_link'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>''), 
@@ -88,15 +90,16 @@ function ciniki_bugs_add($ciniki) {
 	// Add the bug to the database using the thread libraries
 	//
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbInsert.php');
-	$strsql = "INSERT INTO ciniki_bugs (business_id, type, category, user_id, subject, state, "
+	$strsql = "INSERT INTO ciniki_bugs (business_id, type, priority, status, category, user_id, subject, "
 		. "source, source_link, options, "
 		. "date_added, last_updated) VALUES ("
 		. "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['type']) . "', "
+		. "'" . ciniki_core_dbQuote($ciniki, $args['priority']) . "', "
+		. "'" . ciniki_core_dbQuote($ciniki, $args['status']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['category']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['subject']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['state']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['source']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['source_link']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['options']) . "', "
