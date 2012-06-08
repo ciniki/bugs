@@ -35,7 +35,7 @@ function ciniki_bugs_add($ciniki) {
 //		'state'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'Must specify Open or Closed',
 //			'accepted'=>array('Open', 'Closed')), 
 		'subject'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No subject specified'), 
-		'priority'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>''), 
+		'priority'=>array('required'=>'no', 'default'=>'10', 'blank'=>'yes', 'errmsg'=>''), 
 		'status'=>array('required'=>'no', 'default'=>'1', 'blank'=>'no', 'errmsg'=>''), 
 		'category'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>''), 
 		'source'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>''), 
@@ -122,7 +122,7 @@ function ciniki_bugs_add($ciniki) {
 		$rc = ciniki_core_threadAddFollowup($ciniki, 'bugs', 'ciniki_bug_followups', 'bug', $bug_id, array(
 			'user_id'=>$ciniki['session']['user']['id'],
 			'bug_id'=>$bug_id,
-			'content'=>$ciniki['request']['args']['content']
+			'content'=>$args['content']
 			));
 		if( $rc['stat'] != 'ok' ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'bugs');
@@ -211,7 +211,7 @@ function ciniki_bugs_add($ciniki) {
 			if( $user_id != $ciniki['session']['user']['id'] ) {
 				$rc = ciniki_users_emailUser($ciniki, $user_id, 
 					$ciniki['session']['user']['display_name'] . ' submitted bug #' . $bug_id . ': ' . $args['subject'],
-						$args['followup'] 
+						$args['content'] 
 						. "\n\n"
 					);
 			}
