@@ -35,6 +35,7 @@ function ciniki_bugs_list($ciniki) {
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
 		'type'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'1', 'errmsg'=>''), 
 		'category'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>'No category specified'), 
+		'priority'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>'No priority specified'), 
 		'status'=>array('required'=>'Yes', 'blank'=>'no', 'errmsg'=>'No status specified'),
 //		'state'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'Must specify Open or Closed',
 //			'accepted'=>array('Open', 'Closed')), 
@@ -106,6 +107,9 @@ function ciniki_bugs_list($ciniki) {
 	}
 	if( isset($args['category']) ) {
 		$strsql .= "AND category = '" . ciniki_core_dbQuote($ciniki, $args['category']) . "' ";
+	}
+	if( isset($args['priority']) ) {
+		$strsql .= "AND priority = '" . ciniki_core_dbQuote($ciniki, $args['priority']) . "' ";
 	}
 
 	// status - optional

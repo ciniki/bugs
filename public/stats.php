@@ -36,7 +36,18 @@ function ciniki_bugs_stats($ciniki) {
 
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
 
-	$rsp = array('stat'=>'ok');
+	$rsp = array('stat'=>'ok', 
+//		'bugs'=>array('priorities'=>array(
+//			'High'=>array('name'=>'High', 'count'=>'0'),
+//			'Medium'=>array('name'=>'Medium', 'count'=>'0'),
+//			'Low'=>array('name'=>'Low', 'count'=>'0'),
+//			)), 
+//		'features'=>array('priorities'=>array(
+//			'High'=>array('name'=>'High', 'count'=>'0'),
+//			'Medium'=>array('name'=>'Medium', 'count'=>'0'),
+//			'Low'=>array('name'=>'Low', 'count'=>'0'),
+//			)),
+		);
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
 	
@@ -58,14 +69,42 @@ function ciniki_bugs_stats($ciniki) {
 		array('container'=>'categories', 'fname'=>'name', 'name'=>'category',
 			'fields'=>array('name', 'count')),
 		));
-	// error_log($strsql);
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
 
 	if( isset($rc['types']) ) {
 		foreach($rc['types'] as $tnum => $type) {
-			$rsp[$type['type']['type_name']] = $type['type']['categories'];
+			$rsp[$type['type']['type_name']]['categories'] = $type['type']['categories'];
+		}
+	}
+
+	//
+	// Get priority stats
+	//
+	$strsql = "SELECT type AS type_name, priority AS name, COUNT(*) AS count "
+		. "FROM ciniki_bugs "
+		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "AND status = 1 "
+		. "GROUP BY ciniki_bugs.type, ciniki_bugs.priority DESC "
+		. "";
+	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'artcatalog', array(
+		array('container'=>'types', 'fname'=>'type_name', 'name'=>'type',
+			'fields'=>array('type_name'), 
+			'maps'=>array('type_name'=>array(''=>'unknown', '1'=>'bugs', '2'=>'features')),
+			),
+		array('container'=>'priorities', 'fname'=>'name', 'name'=>'priority',
+			'fields'=>array('name', 'count'),
+			'maps'=>array('name'=>array('0'=>'Unknown', '10'=>'Low', '30'=>'Medium', '50'=>'High')),
+			),
+		));
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+
+	if( isset($rc['types']) ) {
+		foreach($rc['types'] as $tnum => $type) {
+			$rsp[$type['type']['type_name']]['priorities'] = $type['type']['priorities'];
 		}
 	}
 
