@@ -198,7 +198,8 @@ function ciniki_bugs_add($ciniki) {
 		//
 		$strsql = "SELECT user_id FROM ciniki_business_users "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. "AND (groups & 0x01) > 0 ";
+			. "AND package = 'ciniki' "
+			. "AND (permission_group = 'owners') "
 		$rc = ciniki_core_dbQueryList($ciniki, $strsql, 'bugs', 'user_ids', 'user_id');
 		if( $rc['stat'] != 'ok' || !isset($rc['user_ids']) || !is_array($rc['user_ids']) ) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'206', 'msg'=>'Unable to find users', 'err'=>$rc['err']));
