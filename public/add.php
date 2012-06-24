@@ -81,6 +81,9 @@ function ciniki_bugs_add($ciniki) {
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionStart.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionRollback.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionCommit.php');
+	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
+	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbInsert.php');
+	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbAddModuleHistory.php');
 	$rc = ciniki_core_dbTransactionStart($ciniki, 'bugs');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -89,7 +92,6 @@ function ciniki_bugs_add($ciniki) {
 	//
 	// Add the bug to the database using the thread libraries
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbInsert.php');
 	$strsql = "INSERT INTO ciniki_bugs (business_id, type, priority, status, category, user_id, subject, "
 		. "source, source_link, options, "
 		. "date_added, last_updated) VALUES ("
@@ -112,6 +114,26 @@ function ciniki_bugs_add($ciniki) {
 	$bug_id = $rc['insert_id'];
 	if( $bug_id < 1 ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'215', 'msg'=>'Internal Error', 'pmsg'=>'Unable to add bug.'));
+	}
+
+	//
+	// Add all the fields to the change log
+	//
+	$changelog_fields = array(
+		'type',
+		'priority',
+		'status',
+		'category',
+		'subject',
+		'source',
+		'source_link',
+		'options',
+		);
+	foreach($changelog_fields as $field) {
+		if( isset($args[$field]) && $args[$field] != '' ) {
+			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'bugs', 'ciniki_bug_history', $args['business_id'], 
+				1, 'ciniki_bugs', $bug_id, $field, $args[$field]);
+		}
 	}
 
 	//

@@ -67,7 +67,7 @@ function ciniki_bugs_close($ciniki) {
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionRollback.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionCommit.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbUpdate.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbAddChangeLog.php');
+	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbAddModuleHistory.php');
 	$rc = ciniki_core_dbTransactionStart($ciniki, 'bugs');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -86,7 +86,8 @@ function ciniki_bugs_close($ciniki) {
 		return $rc;
 	}
 
-	$rc = ciniki_core_dbAddChangeLog($ciniki, 'bugs', $args['business_id'], 'ciniki_bugs', $args['bug_id'], 'status', '60');
+	$rc = ciniki_core_dbAddModuleHistory($ciniki, 'bugs', 'ciniki_bug_history', $args['business_id'], 
+		2, 'ciniki_bugs', $args['bug_id'], 'status', '60');
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'bugs');
 		return $rc;
