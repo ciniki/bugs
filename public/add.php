@@ -187,9 +187,6 @@ function ciniki_bugs_add($ciniki) {
 		//
 		// Select the users attached to the business and bug tracking module
 		//
-		$strsql = "SELECT user_id FROM ciniki_business_users "
-			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. "AND (groups & 0x400) = 0x0400 ";
 		
 		// threadAddFollower($ciniki, 'bugs', 'bug', $bug_id, $user_id, array());
 	}
