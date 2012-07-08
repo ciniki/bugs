@@ -96,7 +96,7 @@ function ciniki_bugs_close($ciniki) {
 	//
 	// FIXME: Notify the other users on this thread there was an update.
 	//
-	// ciniki_core_threadNotifyUsers($ciniki, 'bugs', 'ciniki_bug_users', 'followup', 
+	// ciniki_core_threadNotifyUsers($ciniki, 'bugs', 'ciniki_bug_users', 'followup');
 	//
 
 	//
