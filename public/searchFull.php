@@ -28,7 +28,7 @@ function ciniki_bugs_searchFull($ciniki) {
     // check permission to run this function for this business
     //  
     require_once($ciniki['config']['core']['modules_dir'] . '/bugs/private/checkAccess.php');
-    $rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.messagesSearchFull', 0, 0); 
+    $rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.searchFull', 0, 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
