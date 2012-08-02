@@ -59,7 +59,7 @@ function ciniki_bugs_searchField($ciniki) {
 		$strsql .= "LIMIT 25 ";
 	}
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
-	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'bugs', array(
+	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.bugs', array(
 		array('container'=>'results', 'fname'=>'name', 'name'=>'result', 'fields'=>array('name')),
 		));
 	if( $rc['stat'] != 'ok' ) {

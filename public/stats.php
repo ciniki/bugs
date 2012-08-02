@@ -61,7 +61,7 @@ function ciniki_bugs_stats($ciniki) {
 		. "AND status = 1 "
 		. "GROUP BY ciniki_bugs.type, ciniki_bugs.category "
 		. "";
-	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'artcatalog', array(
+	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.bugs', array(
 		array('container'=>'types', 'fname'=>'type_name', 'name'=>'type',
 			'fields'=>array('type_name'), 
 			'maps'=>array('type_name'=>array(''=>'unknown', '1'=>'bugs', '2'=>'features')),
@@ -88,7 +88,7 @@ function ciniki_bugs_stats($ciniki) {
 		. "AND status = 1 "
 		. "GROUP BY ciniki_bugs.type, ciniki_bugs.priority DESC "
 		. "";
-	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'artcatalog', array(
+	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.bugs', array(
 		array('container'=>'types', 'fname'=>'type_name', 'name'=>'type',
 			'fields'=>array('type_name'), 
 			'maps'=>array('type_name'=>array(''=>'unknown', '1'=>'bugs', '2'=>'features')),

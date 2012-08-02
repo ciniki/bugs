@@ -67,7 +67,7 @@ function ciniki_bugs_addFollowup($ciniki) {
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionStart.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionRollback.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionCommit.php');
-	$rc = ciniki_core_dbTransactionStart($ciniki, 'bugs');
+	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.bugs');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
@@ -76,9 +76,9 @@ function ciniki_bugs_addFollowup($ciniki) {
 	// Add a followup 
 	//
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadAddFollowup.php');
-	$rc = ciniki_core_threadAddFollowup($ciniki, 'bugs', 'ciniki_bug_followups', 'bug', $args['bug_id'], $args);
+	$rc = ciniki_core_threadAddFollowup($ciniki, 'ciniki.bugs', 'ciniki_bug_followups', 'bug', $args['bug_id'], $args);
 	if( $rc['stat'] != 'ok' ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'bugs');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
 		return $rc;
 	}
 
@@ -87,9 +87,9 @@ function ciniki_bugs_addFollowup($ciniki) {
 	// will make sure the flag is set.
 	// 
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadAddFollower.php');
-	$rc = ciniki_core_threadAddFollower($ciniki, 'bugs', 'ciniki_bug_users', 'bug', $args['bug_id'], $ciniki['session']['user']['id']);
+	$rc = ciniki_core_threadAddFollower($ciniki, 'ciniki.bugs', 'ciniki_bug_users', 'bug', $args['bug_id'], $ciniki['session']['user']['id']);
 	if( $rc['stat'] != 'ok' ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'bugs');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
 		return $rc;
 	}
 
@@ -100,16 +100,16 @@ function ciniki_bugs_addFollowup($ciniki) {
 		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' "
 		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "";
-	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'bugs');
+	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.bugs');
 	if( $rc['stat'] != 'ok' ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'bugs');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
 		return $rc;
 	}
 
 	//
 	// Commit the changes
 	//
-	$rc = ciniki_core_dbTransactionCommit($ciniki, 'bugs');
+	$rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.bugs');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
@@ -123,7 +123,7 @@ function ciniki_bugs_addFollowup($ciniki) {
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' "
 		. "";
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
-	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'bugs', 'bug');
+	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.bugs', 'bug');
 	if( $rc['stat'] != 'ok' || !isset($rc['bug']) || !is_array($rc['bug']) ) {
 		return $rc;
 	}
@@ -133,11 +133,19 @@ function ciniki_bugs_addFollowup($ciniki) {
 	// Notify the other users on this thread there was an update.
 	//
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadNotifyUsers.php');
-	$rc = ciniki_core_threadNotifyUsers($ciniki, 'bugs', 'ciniki_bug_users', 'bug', $args['bug_id'], 0x01, 
+	$rc = ciniki_core_threadNotifyUsers($ciniki, 'ciniki.bugs', 'ciniki_bug_users', 'bug', $args['bug_id'], 0x01, 
 		$ciniki['session']['user']['display_name'] . " replied to bug #" . $args['bug_id'] . ': ' . $bug['subject'], 
 			$args['content'] 
 			. "\n\n"
 		);
+
+	//
+	// Update the last_change date in the business modules
+	// Ignore the result, as we don't want to stop user updates if this fails.
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
+	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'bugs');
+
 
 	return array('stat'=>'ok');
 }

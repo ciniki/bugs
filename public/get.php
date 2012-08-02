@@ -81,7 +81,7 @@ function ciniki_bugs_get($ciniki) {
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' "
 		. "";
-	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'bugs', 'bug');
+	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.bugs', 'bug');
 	if( $rc['stat'] != 'ok' ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'468', 'msg'=>'Unable to load bug information', 'err'=>$rc['err']));
 	}
@@ -114,7 +114,7 @@ function ciniki_bugs_get($ciniki) {
 		. "ORDER BY ciniki_bug_followups.date_added ASC "
         . ""; 
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbRspQueryPlusUserIDs.php');
-	$rc = ciniki_core_dbRspQueryPlusUserIDs($ciniki, $strsql, 'bugs', 'followups', 'followup', array('stat'=>'ok', 'followups'=>array(), 'user_ids'=>array()));
+	$rc = ciniki_core_dbRspQueryPlusUserIDs($ciniki, $strsql, 'ciniki.bugs', 'followups', 'followup', array('stat'=>'ok', 'followups'=>array(), 'user_ids'=>array()));
 	if( $rc['stat'] != 'ok' ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'467', 'msg'=>'Unable to load bug information', 'err'=>$rc['err']));
 	}
@@ -127,7 +127,7 @@ function ciniki_bugs_get($ciniki) {
 	$strsql = "SELECT bug_id, user_id, perms "
 		. "FROM ciniki_bug_users "
 		. "WHERE bug_id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' ";
-	$rc = ciniki_core_dbRspQueryPlusUserIDs($ciniki, $strsql, 'bugs', 'users', 'user', array('stat'=>'ok', 'users'=>array(), 'user_ids'=>array()));
+	$rc = ciniki_core_dbRspQueryPlusUserIDs($ciniki, $strsql, 'ciniki.bugs', 'users', 'user', array('stat'=>'ok', 'users'=>array(), 'user_ids'=>array()));
 	if( $rc['stat'] != 'ok' ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'472', 'msg'=>'Unable to load bug information', 'err'=>$rc['err']));
 	}

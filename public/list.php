@@ -80,7 +80,7 @@ function ciniki_bugs_list($ciniki) {
 	// $args['user_id'] = $ciniki['session']['user']['id'];
 	
 //	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadGetList.php');
-//	return ciniki_core_threadGetList($ciniki, 'bugs', 'ciniki_bugs', 'bugs', 'bug', $args);
+//	return ciniki_core_threadGetList($ciniki, 'ciniki.bugs', 'ciniki_bugs', 'bugs', 'bug', $args);
 	//
 	// FIXME: Add timezone information from business settings
 	//
@@ -150,7 +150,7 @@ function ciniki_bugs_list($ciniki) {
 	}
 
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQueryTree.php');
-	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'bugs', array(
+	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.bugs', array(
 		array('container'=>'bugs', 'fname'=>'id', 'name'=>'bug',
 			'fields'=>array('id', 'business_id', 'user_id', 'type', 'priority', 'status', 'status_text', 'subject', 
 				'source', 'source_link', 'date_added', 'last_updated', 'assigned_users'),

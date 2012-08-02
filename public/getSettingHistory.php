@@ -52,6 +52,6 @@ function ciniki_bugs_getSettingHistory($ciniki) {
 	}
 
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbGetModuleHistory.php');
-	return ciniki_core_dbGetModuleHistory($ciniki, 'bugs', 'ciniki_bug_history', $args['business_id'], 'ciniki_bug_settings', $args['field'], 'detail_value');
+	return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.bugs', 'ciniki_bug_history', $args['business_id'], 'ciniki_bug_settings', $args['field'], 'detail_value');
 }
 ?>

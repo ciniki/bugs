@@ -42,7 +42,7 @@ function ciniki_bugs_getSettings($ciniki) {
 	// Grab the settings for the business from the database
 	//
     require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbDetailsQuery.php');
-	$rc = ciniki_core_dbDetailsQuery($ciniki, 'ciniki_bug_settings', 'business_id', $args['business_id'], 'bugs', 'settings', '');
+	$rc = ciniki_core_dbDetailsQuery($ciniki, 'ciniki_bug_settings', 'business_id', $args['business_id'], 'ciniki.bugs', 'settings', '');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}

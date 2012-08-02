@@ -84,7 +84,7 @@ function ciniki_bugs_add($ciniki) {
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbInsert.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbAddModuleHistory.php');
-	$rc = ciniki_core_dbTransactionStart($ciniki, 'bugs');
+	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.bugs');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
@@ -106,9 +106,9 @@ function ciniki_bugs_add($ciniki) {
 		. "'" . ciniki_core_dbQuote($ciniki, $args['source_link']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['options']) . "', "
 		. "UTC_TIMESTAMP(), UTC_TIMESTAMP())";
-	$rc = ciniki_core_dbInsert($ciniki, $strsql, 'bugs');
+	$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.bugs');
 	if( $rc['stat'] != 'ok' ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'bugs');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
 		return $rc;
 	}
 	$bug_id = $rc['insert_id'];
@@ -131,7 +131,7 @@ function ciniki_bugs_add($ciniki) {
 		);
 	foreach($changelog_fields as $field) {
 		if( isset($args[$field]) && $args[$field] != '' ) {
-			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'bugs', 'ciniki_bug_history', $args['business_id'], 
+			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.bugs', 'ciniki_bug_history', $args['business_id'], 
 				1, 'ciniki_bugs', $bug_id, $field, $args[$field]);
 		}
 	}
@@ -141,13 +141,13 @@ function ciniki_bugs_add($ciniki) {
 	//
 	if( isset($ciniki['request']['args']['content']) && $ciniki['request']['args']['content'] != '' ) {
 		require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadAddFollowup.php');
-		$rc = ciniki_core_threadAddFollowup($ciniki, 'bugs', 'ciniki_bug_followups', 'bug', $bug_id, array(
+		$rc = ciniki_core_threadAddFollowup($ciniki, 'ciniki.bugs', 'ciniki_bug_followups', 'bug', $bug_id, array(
 			'user_id'=>$ciniki['session']['user']['id'],
 			'bug_id'=>$bug_id,
 			'content'=>$args['content']
 			));
 		if( $rc['stat'] != 'ok' ) {
-			ciniki_core_dbTransactionRollback($ciniki, 'bugs');
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
 			return $rc;
 		}
 	}
@@ -156,9 +156,9 @@ function ciniki_bugs_add($ciniki) {
 	// Attach the user to the ciniki_bug_users as a follower
 	// $ciniki, $module, $prefix, {$prefix}_id, settings
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadAddFollower.php');
-	$rc = ciniki_core_threadAddFollower($ciniki, 'bugs', 'ciniki_bug_users', 'bug', $bug_id, $ciniki['session']['user']['id']);
+	$rc = ciniki_core_threadAddFollower($ciniki, 'ciniki.bugs', 'ciniki_bug_users', 'bug', $bug_id, $ciniki['session']['user']['id']);
 	if( $rc['stat'] != 'ok' ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'bugs');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
 		return $rc;
 	}
 
@@ -170,9 +170,9 @@ function ciniki_bugs_add($ciniki) {
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadAddUserPerms.php');
 	if( isset($args['assigned']) && is_array($args['assigned']) ) {
 		foreach( $args['assigned'] as $user_id ) {
-			$rc = ciniki_core_threadAddUserPerms($ciniki, 'bugs', 'ciniki_bug_users', 'bug', $bug_id, $user_id, (0x02));
+			$rc = ciniki_core_threadAddUserPerms($ciniki, 'ciniki.bugs', 'ciniki_bug_users', 'bug', $bug_id, $user_id, (0x02));
 			if( $rc['stat'] != 'ok' ) {
-				ciniki_core_dbTransactionRollback($ciniki, 'bugs');
+				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
 				return $rc;
 			}
 		}
@@ -199,10 +199,17 @@ function ciniki_bugs_add($ciniki) {
 		// threadAddTags($ciniki, 'bugs', 'bug', $bug_id);
 	}
 
-	$rc = ciniki_core_dbTransactionCommit($ciniki, 'bugs');
+	$rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.bugs');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
+
+	//
+	// Update the last_change date in the business modules
+	// Ignore the result, as we don't want to stop user updates if this fails.
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
+	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'bugs');
 
 	//
 	// FIXME: Check the settings to see if there's anybody who should be auto attached and emailed
@@ -220,7 +227,7 @@ function ciniki_bugs_add($ciniki) {
 			. "AND package = 'ciniki' "
 			. "AND (permission_group = 'owners') "
 			. "";
-		$rc = ciniki_core_dbQueryList($ciniki, $strsql, 'bugs', 'user_ids', 'user_id');
+		$rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.bugs', 'user_ids', 'user_id');
 		if( $rc['stat'] != 'ok' || !isset($rc['user_ids']) || !is_array($rc['user_ids']) ) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'206', 'msg'=>'Unable to find users', 'err'=>$rc['err']));
 		}

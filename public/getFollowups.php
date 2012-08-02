@@ -69,6 +69,6 @@ function ciniki_bugs_getFollowups($ciniki) {
 	$args['user_id'] = $ciniki['session']['user']['id'];
 	
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadGetFollowups.php');
-	return ciniki_core_threadGetFollowups($ciniki, 'bugs', 'ciniki_bug_followups', 'bug', $args['bug_id'], $args);
+	return ciniki_core_threadGetFollowups($ciniki, 'ciniki.bugs', 'ciniki_bug_followups', 'bug', $args['bug_id'], $args);
 }
 ?>

@@ -68,7 +68,7 @@ function ciniki_bugs_close($ciniki) {
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionCommit.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbUpdate.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbAddModuleHistory.php');
-	$rc = ciniki_core_dbTransactionStart($ciniki, 'bugs');
+	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.bugs');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
@@ -80,32 +80,39 @@ function ciniki_bugs_close($ciniki) {
 		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' "
 		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "";
-	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'bugs');
+	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.bugs');
 	if( $rc['stat'] != 'ok' ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'bugs');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
 		return $rc;
 	}
 
-	$rc = ciniki_core_dbAddModuleHistory($ciniki, 'bugs', 'ciniki_bug_history', $args['business_id'], 
+	$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.bugs', 'ciniki_bug_history', $args['business_id'], 
 		2, 'ciniki_bugs', $args['bug_id'], 'status', '60');
 	if( $rc['stat'] != 'ok' ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'bugs');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
 		return $rc;
 	}
 
 	//
 	// FIXME: Notify the other users on this thread there was an update.
 	//
-	// ciniki_core_threadNotifyUsers($ciniki, 'bugs', 'ciniki_bug_users', 'followup');
+	// ciniki_core_threadNotifyUsers($ciniki, 'ciniki.bugs', 'ciniki_bug_users', 'followup');
 	//
 
 	//
 	// Commit the changes
 	//
-	$rc = ciniki_core_dbTransactionCommit($ciniki, 'bugs');
+	$rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.bugs');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
+
+	//
+	// Update the last_change date in the business modules
+	// Ignore the result, as we don't want to stop user updates if this fails.
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
+	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'bugs');
 
 	return array('stat'=>'ok');
 	
