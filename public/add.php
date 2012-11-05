@@ -28,7 +28,7 @@ function ciniki_bugs_add($ciniki) {
 	//
 	// Find all the required and optional arguments
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/prepareArgs.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
 		'type'=>array('required'=>'no', 'blank'=>'no', 'default'=>'1', 'errmsg'=>'No type specified'), 
@@ -47,11 +47,15 @@ function ciniki_bugs_add($ciniki) {
 		return $rc;
 	}
 	$args = $rc['args'];
-	
+
+	if( $args['priority'] == '' || $args['priority'] == '0' ) {
+		$args['priority'] = 10;
+	}
+
 	//
 	// Get the module settings
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/bugs/private/getSettings.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'getSettings');
 	$rc = ciniki_bugs_getSettings($ciniki, $args['business_id'], 'ciniki.bugs.add');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -62,7 +66,7 @@ function ciniki_bugs_add($ciniki) {
 	// Make sure this module is activated, and
 	// check permission to run this function for this business
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/bugs/private/checkAccess.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'checkAccess');
 	$rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.add', 0, 0);
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -78,12 +82,12 @@ function ciniki_bugs_add($ciniki) {
 	//
 	// Turn off autocommit
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionStart.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionRollback.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionCommit.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbInsert.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbAddModuleHistory.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbInsert');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
 	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.bugs');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -139,8 +143,8 @@ function ciniki_bugs_add($ciniki) {
 	//
 	// Add a followup if they included details
 	//
-	if( isset($ciniki['request']['args']['content']) && $ciniki['request']['args']['content'] != '' ) {
-		require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadAddFollowup.php');
+	if( isset($args['content']) && $args['content'] != '' ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadAddFollowup');
 		$rc = ciniki_core_threadAddFollowup($ciniki, 'ciniki.bugs', 'ciniki_bug_followups', 'bug', $bug_id, array(
 			'user_id'=>$ciniki['session']['user']['id'],
 			'bug_id'=>$bug_id,
@@ -155,7 +159,7 @@ function ciniki_bugs_add($ciniki) {
 	//
 	// Attach the user to the ciniki_bug_users as a follower
 	// $ciniki, $module, $prefix, {$prefix}_id, settings
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadAddFollower.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadAddFollower');
 	$rc = ciniki_core_threadAddFollower($ciniki, 'ciniki.bugs', 'ciniki_bug_users', 'bug', $bug_id, $ciniki['session']['user']['id']);
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
@@ -167,7 +171,7 @@ function ciniki_bugs_add($ciniki) {
 	// both a follower (above code) and assigned (below code).
 	// Add the viewed flag to be set, so it's marked as unread for new assigned users.
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadAddUserPerms.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadAddUserPerms');
 	if( isset($args['assigned']) && is_array($args['assigned']) ) {
 		foreach( $args['assigned'] as $user_id ) {
 			$rc = ciniki_core_threadAddUserPerms($ciniki, 'ciniki.bugs', 'ciniki_bug_users', 'bug', $bug_id, $user_id, (0x02));
@@ -217,8 +221,8 @@ function ciniki_bugs_add($ciniki) {
 	if( ($args['type'] == 1 && isset($settings['bugs.add.notify.owners']) && $settings['bugs.add.notify.owners'] == 'yes')
 		|| ($args['type'] == 2 && isset($settings['features.add.notify.owners']) && $settings['features.add.notify.owners'] == 'yes')
 		) {
-		require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQueryList.php');
-		require_once($ciniki['config']['core']['modules_dir'] . '/users/private/emailUser.php');
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList');
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'emailUser');
 		//
 		//	Email the owners a bug was added to the system.
 		//
@@ -250,7 +254,7 @@ function ciniki_bugs_add($ciniki) {
 	// Send an email to the person who submitted the bug, so they know it has been received
 	//
 	if( $email_submitter == 'yes' ) {
-		require_once($ciniki['config']['core']['modules_dir'] . '/users/private/emailUser.php');
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'emailUser');
 		$rc = ciniki_users_emailUser($ciniki, $ciniki['session']['user']['id'], 
 			'Bug #' . $bug_id . ': ' . $args['subject'] . ' submitted',
 				'Thank you for submitting a bug/feature request.  I have alerted the approriate people and we will look into it.'
