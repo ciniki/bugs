@@ -31,7 +31,7 @@ function ciniki_bugs_getFollowups($ciniki) {
 	//
 	// Find all the required and optional arguments
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/prepareArgs.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
 		'bug_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No bug specified'), 
@@ -44,7 +44,7 @@ function ciniki_bugs_getFollowups($ciniki) {
 	//
 	// Get the module options
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/bugs/private/getSettings.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'getSettings');
 	$rc = ciniki_bugs_getSettings($ciniki, $args['business_id'], 'ciniki.bugs.getFollowups');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -55,7 +55,7 @@ function ciniki_bugs_getFollowups($ciniki) {
 	// Make sure this module is activated, and
 	// check permission to run this function for this business
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/bugs/private/checkAccess.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'checkAccess');
 	$rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.getFollowups', $args['bug_id'], 0);
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -68,7 +68,7 @@ function ciniki_bugs_getFollowups($ciniki) {
 	$args['options'] = 0x03;
 	$args['user_id'] = $ciniki['session']['user']['id'];
 	
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadGetFollowups.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadGetFollowups');
 	return ciniki_core_threadGetFollowups($ciniki, 'ciniki.bugs', 'ciniki_bug_followups', 'bug', $args['bug_id'], $args);
 }
 ?>

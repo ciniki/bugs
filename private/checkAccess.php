@@ -14,7 +14,7 @@ function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_
 	//
 	// Check if the business is active and the module is enabled
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/businesses/private/checkModuleAccess.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'checkModuleAccess');
 	$rc = ciniki_businesses_checkModuleAccess($ciniki, $business_id, 'ciniki', 'bugs');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -28,7 +28,7 @@ function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_
 	//
 	// Load the rulesets for this module
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/bugs/private/getRulesets.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'getRulesets');
 	$rulesets = ciniki_bugs_getRuleSets($ciniki);
 
 	//

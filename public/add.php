@@ -199,7 +199,7 @@ function ciniki_bugs_add($ciniki) {
 	// FIXME: Add tags
 	//
 	if( isset($ciniki['request']['args']['tags']) && $ciniki['request']['args']['tags'] != '' ) {
-		// require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadAddTags.php');
+		// ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadAddTags');
 		// threadAddTags($ciniki, 'bugs', 'bug', $bug_id);
 	}
 

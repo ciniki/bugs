@@ -24,7 +24,7 @@ function ciniki_bugs_addFollowup($ciniki) {
 	//
 	// Find all the required and optional arguments
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/prepareArgs.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
 		'bug_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No bug specified'),
@@ -38,7 +38,7 @@ function ciniki_bugs_addFollowup($ciniki) {
 	//
 	// Get the module settings
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/bugs/private/getSettings.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'getSettings');
 	$rc = ciniki_bugs_getSettings($ciniki, $args['business_id'], 'ciniki.bugs.addFollowup');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -49,7 +49,7 @@ function ciniki_bugs_addFollowup($ciniki) {
 	// Make sure this module is activated, and
 	// check permission to run this function for this business
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/bugs/private/checkAccess.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'checkAccess');
 	$rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.addFollowup', $args['bug_id'], 0);
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -64,9 +64,9 @@ function ciniki_bugs_addFollowup($ciniki) {
 	// 
 	// Turn of auto commit in the database
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionStart.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionRollback.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionCommit.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
 	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.bugs');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -75,7 +75,7 @@ function ciniki_bugs_addFollowup($ciniki) {
 	//
 	// Add a followup 
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadAddFollowup.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadAddFollowup');
 	$rc = ciniki_core_threadAddFollowup($ciniki, 'ciniki.bugs', 'ciniki_bug_followups', 'bug', $args['bug_id'], $args);
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
@@ -86,7 +86,7 @@ function ciniki_bugs_addFollowup($ciniki) {
 	// Make sure the user is attached as a follower.  They may already be attached, but it
 	// will make sure the flag is set.
 	// 
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadAddFollower.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadAddFollower');
 	$rc = ciniki_core_threadAddFollower($ciniki, 'ciniki.bugs', 'ciniki_bug_users', 'bug', $args['bug_id'], $ciniki['session']['user']['id']);
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
@@ -122,7 +122,7 @@ function ciniki_bugs_addFollowup($ciniki) {
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' "
 		. "";
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.bugs', 'bug');
 	if( $rc['stat'] != 'ok' || !isset($rc['bug']) || !is_array($rc['bug']) ) {
 		return $rc;
@@ -132,7 +132,7 @@ function ciniki_bugs_addFollowup($ciniki) {
 	//
 	// Notify the other users on this thread there was an update.
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/threadNotifyUsers.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadNotifyUsers');
 	$rc = ciniki_core_threadNotifyUsers($ciniki, 'ciniki.bugs', 'ciniki_bug_users', 'bug', $args['bug_id'], 0x01, 
 		$ciniki['session']['user']['display_name'] . " replied to bug #" . $args['bug_id'] . ': ' . $bug['subject'], 
 			$args['content'] 

@@ -15,7 +15,7 @@ function ciniki_bugs_stats($ciniki) {
     //  
     // Find all the required and optional arguments
     //  
-    require_once($ciniki['config']['core']['modules_dir'] . '/core/private/prepareArgs.php');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
         )); 
@@ -28,13 +28,13 @@ function ciniki_bugs_stats($ciniki) {
     // Make sure this module is activated, and
     // check permission to run this function for this business
     //  
-    require_once($ciniki['config']['core']['modules_dir'] . '/bugs/private/checkAccess.php');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'checkAccess');
     $rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.stats', 0, 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
 
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 
 	$rsp = array('stat'=>'ok', 
 //		'bugs'=>array('priorities'=>array(

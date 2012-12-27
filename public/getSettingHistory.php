@@ -32,7 +32,7 @@ function ciniki_bugs_getSettingHistory($ciniki) {
 	//
 	// Find all the required and optional arguments
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/prepareArgs.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
 		'field'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No user specified'), 
@@ -45,13 +45,13 @@ function ciniki_bugs_getSettingHistory($ciniki) {
 	//
 	// Check access to business_id as owner, or sys admin
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/bugs/private/checkAccess.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'checkAccess');
 	$ac = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.getSettingHistory', 0, 0);
 	if( $ac['stat'] != 'ok' ) {
 		return $ac;
 	}
 
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbGetModuleHistory.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
 	return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.bugs', 'ciniki_bug_history', $args['business_id'], 'ciniki_bug_settings', $args['field'], 'detail_value');
 }
 ?>
