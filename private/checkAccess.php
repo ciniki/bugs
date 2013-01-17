@@ -68,6 +68,7 @@ function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_
 		$strsql = "SELECT business_id, user_id FROM ciniki_business_users "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "AND user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' "
+			. "AND status = 10 "
 			. "AND CONCAT_WS('.', package, permission_group) IN ('" . implode("','", $rules['permission_groups']) . "') "
 			. "";
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.businesses', 'user');
