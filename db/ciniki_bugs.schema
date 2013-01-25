@@ -59,6 +59,7 @@
 #
 create table ciniki_bugs (
 	id int not null auto_increment,
+	uuid char(36) not null,
 	business_id int not null,
 	user_id int not null,
 	subject varchar(140) not null,
@@ -74,5 +75,6 @@ create table ciniki_bugs (
 	last_updated datetime not null,
 	primary key (id),
 	index (business_id, user_id, state, source),
-	index (priority, status)
-) ENGINE='InnoDB', COMMENT='v1.04';
+	index (priority, status),
+	index uuid (business_id, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.05';

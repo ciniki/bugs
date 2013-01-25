@@ -27,10 +27,15 @@
 # last_updated:		The date and time the status was last changed.
 #
 create table ciniki_bug_users (
+	id int not null auto_increment,
+	uuid char(36) not null,
+	business_id int not null,
 	bug_id int not null,
 	user_id varchar(50) not null,
 	perms tinyint unsigned not null,
 	date_added datetime not null,
 	last_updated datetime not null,
-	primary key (bug_id, user_id)
-) ENGINE='InnoDB', COMMENT='v1.02';
+	primary key (id),
+	unique index (bug_id, user_id),
+	index (business_id, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.03';

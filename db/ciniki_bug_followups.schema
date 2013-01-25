@@ -15,6 +15,8 @@
 #
 create table ciniki_bug_followups (
 	id bigint not null auto_increment,
+	uuid char(36) not null,
+	business_id int not null,
 	parent_id bigint not null,
 	bug_id int not null,
 	user_id int not null,
@@ -22,5 +24,6 @@ create table ciniki_bug_followups (
 	date_added datetime not null,
 	last_updated datetime not null,
 	primary key (id),
-	index (bug_id, user_id)
-) ENGINE='InnoDB', COMMENT='v1.02';
+	index (bug_id, user_id),
+	index (business_id, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.03';

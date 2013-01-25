@@ -122,7 +122,7 @@ function ciniki_bugs_update($ciniki) {
 		$to_be_added = array_diff($args['assigned'], $task_users);
 		if( is_array($to_be_added) ) {
 			foreach($to_be_added as $user_id) {
-				$rc = ciniki_core_threadAddUserPerms($ciniki, 'ciniki.bugs', 'ciniki_bug_users', 'bug', $args['bug_id'], $user_id, (0x02));
+				$rc = ciniki_core_threadAddUserPerms($ciniki, 'ciniki.bugs', $args['business_id'], 'ciniki_bug_users', 'bug', $args['bug_id'], $user_id, (0x02));
 				if( $rc['stat'] != 'ok' ) {
 					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'683', 'msg'=>'Unable to update bug information', 'err'=>$rc['err']));
 				}
@@ -136,7 +136,7 @@ function ciniki_bugs_update($ciniki) {
 	//
 	if( isset($args['followup']) && $args['followup'] != '' ) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadAddFollowup');
-		$rc = ciniki_core_threadAddFollowup($ciniki, 'ciniki.bugs', 'ciniki_bug_followups', 'bug', $args['bug_id'], array(
+		$rc = ciniki_core_threadAddFollowup($ciniki, 'ciniki.bugs', $args['business_id'], 'ciniki_bug_followups', 'bug', $args['bug_id'], array(
 			'user_id'=>$ciniki['session']['user']['id'],
 			'bug_id'=>$args['bug_id'],
 			'content'=>$args['followup']
