@@ -76,7 +76,8 @@ function ciniki_bugs_addFollowup($ciniki) {
 	// Add a followup 
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadAddFollowup');
-	$rc = ciniki_core_threadAddFollowup($ciniki, 'ciniki.bugs', $args['business_id'], 'ciniki_bug_followups', 'bug', $args['bug_id'], $args);
+	$rc = ciniki_core_threadAddFollowup($ciniki, 'ciniki.bugs', 'followup', $args['business_id'], 
+		'ciniki_bug_followups', 'ciniki_bug_history', 'bug', $args['bug_id'], $args);
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
 		return $rc;
@@ -86,8 +87,14 @@ function ciniki_bugs_addFollowup($ciniki) {
 	// Make sure the user is attached as a follower.  They may already be attached, but it
 	// will make sure the flag is set.
 	// 
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadAddFollower');
-	$rc = ciniki_core_threadAddFollower($ciniki, 'ciniki.bugs', $args['business_id'], 'ciniki_bug_users', 'bug', $args['bug_id'], $ciniki['session']['user']['id']);
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadAddUserPerms');
+	$rc = ciniki_core_threadAddUserPerms($ciniki, 'ciniki.bugs', 'user', $args['business_id'], 
+		'ciniki_bug_users', 'ciniki_bug_history', 
+		'bug', $args['bug_id'], $ciniki['session']['user']['id'], (0x01));
+//	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadAddFollower');
+//	$rc = ciniki_core_threadAddFollower($ciniki, 'ciniki.bugs', 'user', $args['business_id'], 
+//		'ciniki_bug_users', 'ciniki_bug_history', 
+//		'bug', $args['bug_id'], $ciniki['session']['user']['id']);
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
 		return $rc;

@@ -145,7 +145,8 @@ function ciniki_bugs_add($ciniki) {
 	//
 	if( isset($args['content']) && $args['content'] != '' ) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadAddFollowup');
-		$rc = ciniki_core_threadAddFollowup($ciniki, 'ciniki.bugs', $args['business_id'], 'ciniki_bug_followups', 'bug', $bug_id, array(
+		$rc = ciniki_core_threadAddFollowup($ciniki, 'ciniki.bugs', 'followup', $args['business_id'], 
+			'ciniki_bug_followups', 'ciniki_bug_history', 'bug', $bug_id, array(
 			'user_id'=>$ciniki['session']['user']['id'],
 			'bug_id'=>$bug_id,
 			'content'=>$args['content']
@@ -159,8 +160,12 @@ function ciniki_bugs_add($ciniki) {
 	//
 	// Attach the user to the ciniki_bug_users as a follower
 	// $ciniki, $module, $prefix, {$prefix}_id, settings
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadAddFollower');
-	$rc = ciniki_core_threadAddFollower($ciniki, 'ciniki.bugs', $args['business_id'], 'ciniki_bug_users', 'bug', $bug_id, $ciniki['session']['user']['id']);
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadAddUserPerms');
+//	$rc = ciniki_core_threadAddFollower($ciniki, 'ciniki.bugs', 'user', $args['business_id'], 
+//		'ciniki_bug_users', 'ciniki_bug_history', 'bug', $bug_id, $ciniki['session']['user']['id']);
+	$rc = ciniki_core_threadAddUserPerms($ciniki, 'ciniki.bugs', 'user', $args['business_id'], 
+		'ciniki_bug_users', 'ciniki_bug_history', 
+		'bug', $bug_id, $ciniki['session']['user']['id'], (0x01));
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
 		return $rc;
@@ -174,7 +179,8 @@ function ciniki_bugs_add($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadAddUserPerms');
 	if( isset($args['assigned']) && is_array($args['assigned']) ) {
 		foreach( $args['assigned'] as $user_id ) {
-			$rc = ciniki_core_threadAddUserPerms($ciniki, 'ciniki.bugs', $args['business_id'], 'ciniki_bug_users', 'bug', $bug_id, $user_id, (0x02));
+			$rc = ciniki_core_threadAddUserPerms($ciniki, 'ciniki.bugs', 'user', $args['business_id'], 
+				'ciniki_bug_users', 'ciniki_bug_history', 'bug', $bug_id, $user_id, (0x02));
 			if( $rc['stat'] != 'ok' ) {
 				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
 				return $rc;
