@@ -114,7 +114,7 @@ function ciniki_bugs_update($ciniki) {
 		if( is_array($to_be_removed) ) {
 			foreach($to_be_removed as $user_id) {
 				$rc = ciniki_core_threadRemoveUserPerms($ciniki, 'ciniki.bugs', 'user', 
-					$args['business_id', 'ciniki_bug_users', 'ciniki_bug_history', 
+					$args['business_id'], 'ciniki_bug_users', 'ciniki_bug_history', 
 					'bug', $args['bug_id'], $user_id, 0x02);
 				if( $rc['stat'] != 'ok' ) {
 					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'682', 'msg'=>'Unable to update bug user information', 'err'=>$rc['err']));
