@@ -93,7 +93,7 @@ function ciniki_bugs_list($ciniki) {
 	// 
 	// Setup the SQL statement to insert the new thread
 	//
-	$strsql = "SELECT ciniki_bugs.id, business_id, ciniki_bugs.user_id, type, priority, ciniki_bugs.status, subject, "
+	$strsql = "SELECT ciniki_bugs.id, ciniki_bugs.business_id, ciniki_bugs.user_id, type, priority, ciniki_bugs.status, subject, "
 		. "source, source_link, ciniki_bugs.status AS status_text, "
 		. "DATE_FORMAT(CONVERT_TZ(ciniki_bugs.date_added, '+00:00', '" . ciniki_core_dbQuote($ciniki, $utc_offset) . "'), '" . ciniki_core_dbQuote($ciniki, $datetime_format) . "') AS date_added, "
 		. "DATE_FORMAT(CONVERT_TZ(ciniki_bugs.last_updated, '+00:00', '" . ciniki_core_dbQuote($ciniki, $utc_offset) . "'), '" . ciniki_core_dbQuote($ciniki, $datetime_format) . "') AS last_updated "
@@ -101,7 +101,7 @@ function ciniki_bugs_list($ciniki) {
 		. "FROM ciniki_bugs "
 		. "LEFT JOIN ciniki_bug_users AS u2 ON (ciniki_bugs.id = u2.bug_id && (u2.perms&0x02) = 2) "
 		. "LEFT JOIN ciniki_users AS u3 ON (u2.user_id = u3.id) "
-		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' ";
+		. "WHERE ciniki_bugs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' ";
 	if( isset($args['type']) && $args['type'] != '' ) {
 		$strsql .= "AND type = '" . ciniki_core_dbQuote($ciniki, $args['type']) . "' ";
 	}
