@@ -20,7 +20,7 @@
 // -------
 // <rsp stat='ok' id='1' />
 //
-function ciniki_bugs_add($ciniki) {
+function ciniki_bugs_add(&$ciniki) {
 	//
 	// Track if the submitter should be emailed, if submitter is owner, we don't want to email twice
 	// 
@@ -228,7 +228,7 @@ function ciniki_bugs_add($ciniki) {
 		|| ($args['type'] == 2 && isset($settings['features.add.notify.owners']) && $settings['features.add.notify.owners'] == 'yes')
 		) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList');
-		ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'emailUser');
+//		ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'emailUser');
 		//
 		//	Email the owners a bug was added to the system.
 		//
@@ -247,11 +247,15 @@ function ciniki_bugs_add($ciniki) {
 			// Don't email the submitter, they will get a separate email
 			//
 			if( $user_id != $ciniki['session']['user']['id'] ) {
-				$rc = ciniki_users_emailUser($ciniki, $user_id, 
-					$ciniki['session']['user']['display_name'] . ' submitted bug #' . $bug_id . ': ' . $args['subject'],
-						$args['content'] 
-						. "\n\n"
+				$ciniki['emailqueue'][] = array('user_id'=>$user_id,
+					'subject'=>$ciniki['session']['user']['display_name'] . ' submitted bug #' . $bug_id . ': ' . $args['subject'],
+					'textmsg'=>$args['content'],
 					);
+//				$rc = ciniki_users_emailUser($ciniki, $user_id, 
+//					$ciniki['session']['user']['display_name'] . ' submitted bug #' . $bug_id . ': ' . $args['subject'],
+//						$args['content'] 
+//						. "\n\n"
+//					);
 			}
 		}
 	}
@@ -260,11 +264,15 @@ function ciniki_bugs_add($ciniki) {
 	// Send an email to the person who submitted the bug, so they know it has been received
 	//
 	if( $email_submitter == 'yes' ) {
-		ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'emailUser');
-		$rc = ciniki_users_emailUser($ciniki, $ciniki['session']['user']['id'], 
-			'Bug #' . $bug_id . ': ' . $args['subject'] . ' submitted',
-				'Thank you for submitting a bug/feature request.  I have alerted the approriate people and we will look into it.'
+		$ciniki['emailqueue'][] = array('user_id'=>$ciniki['session']['user']['id'],
+			'subject'=>'Bug #' . $bug_id . ': ' . $args['subject'] . ' submitted',
+			'textmsg'=>'Thank you for submitting a bug/feature request.  I have alerted the approriate people and we will look into it.',
 			);
+//		ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'emailUser');
+//		$rc = ciniki_users_emailUser($ciniki, $ciniki['session']['user']['id'], 
+//			'Bug #' . $bug_id . ': ' . $args['subject'] . ' submitted',
+//				'Thank you for submitting a bug/feature request.  I have alerted the approriate people and we will look into it.'
+//			);
 	}
 
 	//
@@ -277,8 +285,12 @@ function ciniki_bugs_add($ciniki) {
 		$emails = preg_split('/,/', $settings['bugs.add.notify.sms.email']);
 		foreach($emails as $email) {
 			if( $email != '' ) {
-				$headers = 'From: "' . $ciniki['config']['core']['system.email.name'] . '" <' . $ciniki['config']['core']['system.email'] . ">\r\n";
-				mail($settings['bugs.add.notify.sms.email'], 'New Bug #' . $bug_id, $args['subject'], $headers, '-f' . $ciniki['config']['core']['system.email']);	
+				$ciniki['emailqueue'][] = array('to'=>$settings['bugs.add.notify.sms.email'],
+					'subject'=>'New Bug #' . $bug_id, $args['subject'],
+					'textmsg'=>'Submitted: ' . $ciniki['session']['user']['display_name'],
+					);
+//				$headers = 'From: "' . $ciniki['config']['core']['system.email.name'] . '" <' . $ciniki['config']['core']['system.email'] . ">\r\n";
+//				mail($settings['bugs.add.notify.sms.email'], 'New Bug #' . $bug_id, $args['subject'], $headers, '-f' . $ciniki['config']['core']['system.email']);	
 			}
 		}
 	}

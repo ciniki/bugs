@@ -20,7 +20,7 @@
 // -------
 // <rsp stat='ok' id='1' />
 //
-function ciniki_bugs_addFollowup($ciniki) {
+function ciniki_bugs_addFollowup(&$ciniki) {
 	//
 	// Find all the required and optional arguments
 	//

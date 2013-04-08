@@ -20,7 +20,7 @@
 // -------
 // <rsp stat='ok'/>
 //
-function ciniki_bugs_close($ciniki) {
+function ciniki_bugs_close(&$ciniki) {
 	//
 	// Find all the required and optional arguments
 	//
