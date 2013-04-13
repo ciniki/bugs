@@ -32,17 +32,19 @@ function ciniki_bugs_list($ciniki) {
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-		'type'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'1', 'errmsg'=>''), 
-		'category'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>'No category specified'), 
-		'priority'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>'No priority specified'), 
-		'status'=>array('required'=>'Yes', 'blank'=>'no', 'errmsg'=>'No status specified'),
-//		'state'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'Must specify Open or Closed',
+		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+		'type'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'1', 'name'=>'Type'), 
+		'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'), 
+		'priority'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Priority'), 
+		'status'=>array('required'=>'Yes', 'blank'=>'no', 'name'=>'Status'),
+//		'state'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Open or Closed',
 //			'accepted'=>array('Open', 'Closed')), 
-		'subject'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>'No subject specified'), 
-		'source'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>''), 
-		'source_link'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>''), 
-		'limit'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>''), 
+		'subject'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Subject'), 
+		'source'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Source'), 
+		'source_link'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Source Link'), 
+		'limit'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Limit'), 
+		'order'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'), 
+
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -142,7 +144,11 @@ function ciniki_bugs_list($ciniki) {
 		$strsql .= "AND source_link = '" . ciniki_core_dbQuote($ciniki, $args['source_link']) . "' ";
 	}
 
-	$strsql .= "ORDER BY id ";
+	if( isset($args['order']) && $args['order'] == 'latestupdated' ) {	
+		$strsql .= "ORDER BY last_updated, id ";
+	} else {
+		$strsql .= "ORDER BY id ";
+	}
 
 	// Check for a requested limit
 	if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {

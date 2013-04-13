@@ -49,8 +49,11 @@ function ciniki_bugs_searchQuick($ciniki) {
 		. "WHERE ciniki_bugs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND ciniki_bugs.status = 1 "		// Open bugs/features
 		. "AND (subject LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-			. "OR subject LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-			. "OR ciniki_bug_followups.content LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+			. "OR subject LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' ";
+	if( is_numeric($args['start_needle']) ) {
+		$strsql .= "OR ciniki_bugs.id LIKE '%" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%'";
+	}
+	$strsql	.= "OR ciniki_bug_followups.content LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 			. "OR ciniki_bug_followups.content LIKE ' %" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' ";
 	if( is_integer($args['start_needle']) ) {
 		$strsql .= "OR ciniki_bugs.id LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' ";
