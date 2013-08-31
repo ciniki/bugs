@@ -30,18 +30,18 @@ function ciniki_bugs_add(&$ciniki) {
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-		'type'=>array('required'=>'no', 'blank'=>'no', 'default'=>'1', 'errmsg'=>'No type specified'), 
-//		'state'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'Must specify Open or Closed',
+		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+		'type'=>array('required'=>'no', 'blank'=>'no', 'default'=>'1', 'name'=>'Type'), 
+//		'state'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Must specify Open or Closed',
 //			'accepted'=>array('Open', 'Closed')), 
-		'subject'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No subject specified'), 
-		'priority'=>array('required'=>'no', 'default'=>'10', 'blank'=>'yes', 'errmsg'=>''), 
-		'status'=>array('required'=>'no', 'default'=>'1', 'blank'=>'no', 'errmsg'=>''), 
-		'category'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>''), 
-		'source'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>''), 
-		'source_link'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>''), 
-		'content'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No follow up specified'), 
-		'assigned'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'errmsg'=>'No assignments specified'),
+		'subject'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Subject'), 
+		'priority'=>array('required'=>'no', 'default'=>'10', 'blank'=>'yes', 'name'=>'Priority'), 
+		'status'=>array('required'=>'no', 'default'=>'1', 'blank'=>'no', 'name'=>'Status'), 
+		'category'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Category'), 
+		'source'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Source'), 
+		'source_link'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Source Link'), 
+		'content'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Content'), 
+		'assigned'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Assigned'),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;

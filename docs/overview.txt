@@ -1,3 +1,7 @@
 The bugs module was developed to track bugs in the Ciniki platform,
 but is also available to businesses to use if they want.  This system can
 be used on their website for bugs submitted for their products.
+
+The bugs module also stores feature requests and questions.  Because they are
+so similar, and people will ask questions that should become bugs, they have
+merged into one module.

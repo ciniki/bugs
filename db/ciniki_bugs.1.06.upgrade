@@ -1,0 +1,5 @@
+#
+# This file will upgrade the database table businesses to version 1.06.
+#
+ALTER TABLE ciniki_bugs ADD COLUMN flags tinyint unsigned not null AFTER status;
+ALTER TABLE ciniki_bugs COMMENT='v1.06';
