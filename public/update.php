@@ -14,15 +14,17 @@ function ciniki_bugs_update($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-        'bug_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No ID specified'), 
-		'type'=>array('required'=>'no', 'blank'=>'no', 'errmsg'=>'No type specified'),
-		'priority'=>array('required'=>'no', 'blank'=>'no', 'errmsg'=>'No type specified', 'accepted'=>array('10','30','50')),
-		'status'=>array('required'=>'no', 'blank'=>'no', 'errmsg'=>'No type specified', 'accepted'=>array('1', '60')),
-        'subject'=>array('required'=>'no', 'blank'=>'no', 'errmsg'=>'No subject specified'), 
-        'category'=>array('required'=>'no', 'blank'=>'no', 'errmsg'=>'No category specified'), 
-		'assigned'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'errmsg'=>'No assignments specified'),
-        'followup'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No followup specified'), 
+		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'bug_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Bug'), 
+		'type'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Type', 'validlist'=>array('1', '2', '3')),
+		'priority'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Type', 'validlist'=>array('10','30','50')),
+		'status'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Status', 'validlist'=>array('1', '60')),
+        'subject'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Subject'), 
+        'category'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Category'), 
+        'options'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Flags'), 
+		'assigned'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Assigned'),
+        'followup'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Followup'), 
+        'notesfollowup'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Notes'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -67,6 +69,7 @@ function ciniki_bugs_update($ciniki) {
 		'status',
 		'subject',
 		'category',
+		'options',
 		);
 	foreach($changelog_fields as $field) {
 		if( isset($args[$field]) ) {
@@ -145,6 +148,23 @@ function ciniki_bugs_update($ciniki) {
 			'user_id'=>$ciniki['session']['user']['id'],
 			'bug_id'=>$args['bug_id'],
 			'content'=>$args['followup']
+			));
+		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
+			return $rc;
+		}
+	}
+
+	//
+	// Check if there is a private notes followup
+	//
+	if( isset($args['notesfollowup']) && $args['notesfollowup'] != '' ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadAddFollowup');
+		$rc = ciniki_core_threadAddFollowup($ciniki, 'ciniki.bugs', 'followup', $args['business_id'], 
+			'ciniki_bug_notes', 'ciniki_bug_history', 'bug', $args['bug_id'], array(
+			'user_id'=>$ciniki['session']['user']['id'],
+			'bug_id'=>$args['bug_id'],
+			'content'=>$args['notesfollowup']
 			));
 		if( $rc['stat'] != 'ok' ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');

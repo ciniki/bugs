@@ -36,10 +36,8 @@ function ciniki_bugs_searchQuick($ciniki) {
 	// Get the number of messages in each status for the business, 
 	// if no rows found, then return empty array
 	//
-	$strsql = "SELECT ciniki_bugs.id, type, priority, subject, source, source_link, "
-//		. "IF((ciniki_atdos.flags&0x02)=2, 'yes', 'no') AS private, "
+	$strsql = "SELECT ciniki_bugs.id, type, ciniki_bugs.status, priority, subject, source, source_link, "
 		. "IF((u1.perms&0x02)=2, 'yes', 'no') AS assigned, "
-//		. "IF((u1.perms&0x08)=8, 'yes', 'no') AS viewed, "
 		. "IFNULL(u3.display_name, '') AS assigned_users "
 		. "FROM ciniki_bugs "
 		. "LEFT JOIN ciniki_bug_users AS u1 ON (ciniki_bugs.id = u1.bug_id AND u1.user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "') "
@@ -81,7 +79,7 @@ function ciniki_bugs_searchQuick($ciniki) {
 		array('container'=>'bugs', 'fname'=>'id', 'name'=>'bug',
 			'fields'=>array('id', 'type', 'subject', 'priority', 'status', 'assigned', 'assigned_users', 'source', 'source_link'), 
 			'lists'=>array('assigned_users'),
-			'maps'=>array('type'=>array('1'=>'Bug', '2'=>'Feature'))),
+			'maps'=>array('type'=>array('1'=>'Bug', '2'=>'Feature', '3'=>'Question'))),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;

@@ -78,7 +78,7 @@ function ciniki_bugs_searchFull($ciniki) {
 		array('container'=>'bugs', 'fname'=>'id', 'name'=>'bug',
 			'fields'=>array('id', 'type', 'subject', 'priority', 'status', 'assigned', 'assigned_users', 'source', 'source_link'), 
 			'lists'=>array('assigned_users'),
-			'maps'=>array('type'=>array('1'=>'Bug', '2'=>'Feature'))),
+			'maps'=>array('type'=>array('1'=>'Bug', '2'=>'Feature', '3'=>'Question'))),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;

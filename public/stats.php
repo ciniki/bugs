@@ -64,7 +64,7 @@ function ciniki_bugs_stats($ciniki) {
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.bugs', array(
 		array('container'=>'types', 'fname'=>'type_name', 'name'=>'type',
 			'fields'=>array('type_name'), 
-			'maps'=>array('type_name'=>array(''=>'unknown', '1'=>'bugs', '2'=>'features')),
+			'maps'=>array('type_name'=>array(''=>'unknown', '1'=>'bugs', '2'=>'features', '3'=>'questions')),
 			),
 		array('container'=>'categories', 'fname'=>'name', 'name'=>'category',
 			'fields'=>array('name', 'count')),
@@ -91,7 +91,7 @@ function ciniki_bugs_stats($ciniki) {
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.bugs', array(
 		array('container'=>'types', 'fname'=>'type_name', 'name'=>'type',
 			'fields'=>array('type_name'), 
-			'maps'=>array('type_name'=>array(''=>'unknown', '1'=>'bugs', '2'=>'features')),
+			'maps'=>array('type_name'=>array(''=>'unknown', '1'=>'bugs', '2'=>'features', '3'=>'questions')),
 			),
 		array('container'=>'priorities', 'fname'=>'name', 'name'=>'priority',
 			'fields'=>array('name', 'count'),

@@ -18,6 +18,9 @@
 // 		<followups>
 //			<followup id="2" user_id="1" content="" />
 // 		</followups>
+// 		<notes>
+//			<followup id="2" user_id="1" content="" />
+// 		</notes>
 // 	</bug>
 // 	<users>
 // 		<1>
@@ -74,19 +77,36 @@ function ciniki_bugs_get($ciniki) {
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
-	$strsql = "SELECT id, type, priority, status, category, user_id, subject, source, source_link, "
-		. "DATE_FORMAT(CONVERT_TZ(date_added, '+00:00', '" . ciniki_core_dbQuote($ciniki, $utc_offset) . "'), '" . ciniki_core_dbQuote($ciniki, $datetime_format) . "') AS date_added, "
-		. "DATE_FORMAT(CONVERT_TZ(last_updated, '+00:00', '" . ciniki_core_dbQuote($ciniki, $utc_offset) . "'), '" . ciniki_core_dbQuote($ciniki, $datetime_format) . "') AS last_updated "
+	$strsql = "SELECT ciniki_bugs.id, ciniki_bugs.type, "
+		. "ciniki_bugs.priority, "
+		. "ciniki_bugs.status, "
+		. "ciniki_bugs.category, "
+		. "ciniki_bugs.user_id, "
+		. "ciniki_bugs.subject, "
+		. "ciniki_bugs.source, "
+		. "ciniki_bugs.source_link, "
+		. "ciniki_bugs.options, "
+		. "DATE_FORMAT(CONVERT_TZ(ciniki_bugs.date_added, '+00:00', '" . ciniki_core_dbQuote($ciniki, $utc_offset) . "'), '" . ciniki_core_dbQuote($ciniki, $datetime_format) . "') AS date_added, "
+		. "DATE_FORMAT(CONVERT_TZ(ciniki_bugs.last_updated, '+00:00', '" . ciniki_core_dbQuote($ciniki, $utc_offset) . "'), '" . ciniki_core_dbQuote($ciniki, $datetime_format) . "') AS last_updated "
 		. "FROM ciniki_bugs "
-		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' "
+		. "LEFT JOIN ciniki_bug_users ON (ciniki_bugs.id = ciniki_bug_users.bug_id) "
+		. "WHERE ciniki_bugs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "AND ciniki_bugs.id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' "
 		. "";
+	// If not a sysadmin, then check they are attached to this bug, or the bug is public
+	if( ($ciniki['session']['user']['perms']&0x01) == 0 ) {
+		$strsql .= "AND ((ciniki_bugs.options&0x30) > 0 "
+			. "OR ciniki_bug_users.user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' "
+			. "OR ciniki_bugs.user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' "
+			. ") ";
+	}
+	$strsql .= "LIMIT 1 ";	// Will get multiple rows when joined to ciniki_bug_users table
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.bugs', 'bug');
 	if( $rc['stat'] != 'ok' ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'468', 'msg'=>'Unable to load bug information', 'err'=>$rc['err']));
 	}
 	if( !isset($rc['bug']) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'469', 'msg'=>'Unable to load bug information', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'469', 'msg'=>'Unable to load bug information'));
 	}
 	// Setup a array to hold all the bug information
 	$bug = $rc['bug'];
@@ -105,21 +125,47 @@ function ciniki_bugs_get($ciniki) {
     //  
     // Get the followups to the bug
     //  
-    $strsql = "SELECT id, bug_id, user_id, "
-        . "DATE_FORMAT(date_added, '" . ciniki_core_dbQuote($ciniki, $datetime_format) . "') as date_added, "
-        . "CAST(UNIX_TIMESTAMP(UTC_TIMESTAMP())-UNIX_TIMESTAMP(date_added) as DECIMAL(12,0)) as age, "
-		. "content "
-		. "FROM ciniki_bug_followups "
-        . "WHERE ciniki_bug_followups.bug_id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' "
-		. "ORDER BY ciniki_bug_followups.date_added ASC "
-        . ""; 
+//    $strsql = "SELECT id, bug_id, user_id, "
+ //       . "DATE_FORMAT(date_added, '" . ciniki_core_dbQuote($ciniki, $datetime_format) . "') as date_added, "
+  //      . "CAST(UNIX_TIMESTAMP(UTC_TIMESTAMP())-UNIX_TIMESTAMP(date_added) as DECIMAL(12,0)) as age, "
+//		. "content "
+//		. "FROM ciniki_bug_followups "
+ //       . "WHERE ciniki_bug_followups.bug_id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' "
+//		. "ORDER BY ciniki_bug_followups.date_added ASC "
+ //       . ""; 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbRspQueryPlusUserIDs');
-	$rc = ciniki_core_dbRspQueryPlusUserIDs($ciniki, $strsql, 'ciniki.bugs', 'followups', 'followup', array('stat'=>'ok', 'followups'=>array(), 'user_ids'=>array()));
+//	$rc = ciniki_core_dbRspQueryPlusUserIDs($ciniki, $strsql, 'ciniki.bugs', 'followups', 'followup', array('stat'=>'ok', 'followups'=>array(), 'user_ids'=>array()));
+//	if( $rc['stat'] != 'ok' ) {
+//		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'467', 'msg'=>'Unable to load bug information', 'err'=>$rc['err']));
+//	}
+//	$bug['followups'] = $rc['followups'];
+//	$user_ids = array_merge($user_ids, $rc['user_ids']);
+
+    //  
+    // Get the followups to the bug
+    //  
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadGetFollowups');
+	$rc = ciniki_core_threadGetFollowups($ciniki, 'ciniki.bugs', 'ciniki_bug_followups', 
+		'bug', $args['bug_id'], array());
 	if( $rc['stat'] != 'ok' ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'467', 'msg'=>'Unable to load bug information', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'467', 'msg'=>'Unable to load bug followups', 'err'=>$rc['err']));
 	}
-	$bug['followups'] = $rc['followups'];
-	$user_ids = array_merge($user_ids, $rc['user_ids']);
+	if( isset($rc['followups']) ) {
+		$bug['followups'] = $rc['followups'];
+	}
+
+    //  
+    // Get the notes to the bug
+    //  
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadGetFollowups');
+	$rc = ciniki_core_threadGetFollowups($ciniki, 'ciniki.bugs', 'ciniki_bug_notes', 
+		'bug', $args['bug_id'], array());
+	if( $rc['stat'] != 'ok' ) {
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1335', 'msg'=>'Unable to load bug notes', 'err'=>$rc['err']));
+	}
+	if( isset($rc['followups']) ) {
+		$bug['notes'] = $rc['followups'];
+	}
 
 	//
 	// Get the list of users attached to the bug

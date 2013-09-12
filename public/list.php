@@ -33,7 +33,7 @@ function ciniki_bugs_list($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
-		'type'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'1', 'name'=>'Type'), 
+		'type'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Type'), 
 		'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'), 
 		'priority'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Priority'), 
 		'status'=>array('required'=>'Yes', 'blank'=>'no', 'name'=>'Status'),
@@ -95,7 +95,10 @@ function ciniki_bugs_list($ciniki) {
 	// 
 	// Setup the SQL statement to insert the new thread
 	//
-	$strsql = "SELECT ciniki_bugs.id, ciniki_bugs.business_id, ciniki_bugs.user_id, type, priority, ciniki_bugs.status, subject, "
+	$strsql = "SELECT ciniki_bugs.id, ciniki_bugs.business_id, ciniki_bugs.user_id, "
+		. "ciniki_bugs.type, ciniki_bugs.priority, "
+//		. "CASE ciniki_bugs.type WHEN 1 THEN 'bugs' WHEN 2 THEN 'features' WHEN 3 THEN 'questions' END AS typename, "
+		. "ciniki_bugs.status, ciniki_bugs.subject, "
 		. "source, source_link, ciniki_bugs.status AS status_text, "
 		. "DATE_FORMAT(CONVERT_TZ(ciniki_bugs.date_added, '+00:00', '" . ciniki_core_dbQuote($ciniki, $utc_offset) . "'), '" . ciniki_core_dbQuote($ciniki, $datetime_format) . "') AS date_added, "
 		. "DATE_FORMAT(CONVERT_TZ(ciniki_bugs.last_updated, '+00:00', '" . ciniki_core_dbQuote($ciniki, $utc_offset) . "'), '" . ciniki_core_dbQuote($ciniki, $datetime_format) . "') AS last_updated "
@@ -104,7 +107,7 @@ function ciniki_bugs_list($ciniki) {
 		. "LEFT JOIN ciniki_bug_users AS u2 ON (ciniki_bugs.id = u2.bug_id && (u2.perms&0x02) = 2) "
 		. "LEFT JOIN ciniki_users AS u3 ON (u2.user_id = u3.id) "
 		. "WHERE ciniki_bugs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' ";
-	if( isset($args['type']) && $args['type'] != '' ) {
+	if( isset($args['type']) && $args['type'] != '' && $args['type'] != 0 && $args['type'] != 'all' ) {
 		$strsql .= "AND type = '" . ciniki_core_dbQuote($ciniki, $args['type']) . "' ";
 	}
 	if( isset($args['category']) ) {
@@ -144,8 +147,18 @@ function ciniki_bugs_list($ciniki) {
 		$strsql .= "AND source_link = '" . ciniki_core_dbQuote($ciniki, $args['source_link']) . "' ";
 	}
 
+	// If not a sysadmin, then check they are attached to this bug, or the bug is public
+	if( ($ciniki['session']['user']['perms']&0x01) == 0 ) {
+		$strsql .= "AND ((ciniki_bugs.options&0x30) > 0 "
+			. "OR u2.user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' "
+			. "OR ciniki_bugs.user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' "
+			. ") ";
+	}
+
 	if( isset($args['order']) && $args['order'] == 'latestupdated' ) {	
 		$strsql .= "ORDER BY last_updated, id ";
+	} elseif( isset($args['order']) && $args['order'] == 'type' ) {
+		$strsql .= "ORDER BY type, last_updated, id ";
 	} else {
 		$strsql .= "ORDER BY id ";
 	}
@@ -156,19 +169,50 @@ function ciniki_bugs_list($ciniki) {
 	}
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
-	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.bugs', array(
-		array('container'=>'bugs', 'fname'=>'id', 'name'=>'bug',
-			'fields'=>array('id', 'business_id', 'user_id', 'type', 'priority', 'status', 'status_text', 'subject', 
-				'source', 'source_link', 'date_added', 'last_updated', 'assigned_users'),
-			'lists'=>array('assigned_users'),
-			'maps'=>array('status_text'=>array('0'=>'Unknown', '1'=>'Open', '60'=>'Closed'),
-				'type'=>array('1'=>'Bug', '2'=>'Feature')) ),
-		));
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-	if( !isset($rc['bugs']) ) {
-		return array('stat'=>'ok', 'bugs'=>array());
+	if( isset($args['order']) && $args['order'] == 'type' ) {
+		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.bugs', array(
+			array('container'=>'types', 'fname'=>'type', 'name'=>'type',
+				'fields'=>array('id'=>'type')),
+			array('container'=>'bugs', 'fname'=>'id', 'name'=>'bug',
+				'fields'=>array('id', 'business_id', 'user_id', 'type', 'priority', 
+					'status', 'status_text', 'subject', 
+					'source', 'source_link', 'date_added', 'last_updated', 'assigned_users'),
+				'lists'=>array('assigned_users'),
+				'maps'=>array('status_text'=>array('0'=>'Unknown', '1'=>'Open', '60'=>'Closed'),
+					'type'=>array('1'=>'Bug', '2'=>'Feature', '3'=>'Question')) ),
+			));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		$rsp = array('stat'=>'ok');
+		if( isset($rc['types']) ) {
+			foreach($rc['types'] as $type) {
+				if( $type['type']['id'] == 1 ) {
+					$rsp['bugs'] = $type['type']['bugs'];
+				} elseif( $type['type']['id'] == 2 ) {
+					$rsp['features'] = $type['type']['bugs'];
+				} elseif( $type['type']['id'] == 3 ) {
+					$rsp['questions'] = $type['type']['bugs'];
+				}
+			}
+		}
+		return $rsp;
+	} else {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
+		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.bugs', array(
+			array('container'=>'bugs', 'fname'=>'id', 'name'=>'bug',
+				'fields'=>array('id', 'business_id', 'user_id', 'type', 'priority', 'status', 'status_text', 'subject', 
+					'source', 'source_link', 'date_added', 'last_updated', 'assigned_users'),
+				'lists'=>array('assigned_users'),
+				'maps'=>array('status_text'=>array('0'=>'Unknown', '1'=>'Open', '60'=>'Closed'),
+					'type'=>array('1'=>'Bug', '2'=>'Feature', '3'=>'Question')) ),
+			));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( !isset($rc['bugs']) ) {
+			return array('stat'=>'ok', 'bugs'=>array());
+		}
 	}
 	return $rc;
 }

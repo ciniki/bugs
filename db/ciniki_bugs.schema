@@ -3,6 +3,8 @@
 # -----------
 # The bugs table stores the main information for each bug or feature request or question.
 #
+# Bugs, Features and Questions should all be private by default, and made public by a sysadmin.
+#
 # Fields
 # ------
 # id:				The thread ID.
@@ -54,6 +56,9 @@
 #					_ 0x02 - notify followers, if in bug_users table.
 #					_ 0x04 - 
 #					_ 0x08 - 
+#					_ 0x10 - Public, display for all to see, default is private
+#					_ 0x20 - Public for users, do not display on website, default is private
+#					
 #
 # date_added:		The UTC date and time the thread was added.
 # last_updated:		The UTC date and time the thread was last updated.

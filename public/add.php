@@ -38,6 +38,7 @@ function ciniki_bugs_add(&$ciniki) {
 		'priority'=>array('required'=>'no', 'default'=>'10', 'blank'=>'yes', 'name'=>'Priority'), 
 		'status'=>array('required'=>'no', 'default'=>'1', 'blank'=>'no', 'name'=>'Status'), 
 		'category'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Category'), 
+        'options'=>array('required'=>'no', 'blank'=>'no', 'default'=>0x03, 'name'=>'Flags'), 
 		'source'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Source'), 
 		'source_link'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Source Link'), 
 		'content'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Content'), 
@@ -76,7 +77,8 @@ function ciniki_bugs_add(&$ciniki) {
 	// Setup the other arguments required for adding a thread.  These are arguments
 	// which should not come through the API, but be set within the API code.
 	//
-	$args['options'] = 0x03;
+
+//	$args['options'] = 0x03;
 	$args['user_id'] = $ciniki['session']['user']['id'];
 
 	//
@@ -150,6 +152,23 @@ function ciniki_bugs_add(&$ciniki) {
 			'user_id'=>$ciniki['session']['user']['id'],
 			'bug_id'=>$bug_id,
 			'content'=>$args['content']
+			));
+		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
+			return $rc;
+		}
+	}
+	
+	//
+	// Add a private notes followup if they included details
+	//
+	if( isset($args['notesfollowup']) && $args['notesfollowup'] != '' ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadAddFollowup');
+		$rc = ciniki_core_threadAddFollowup($ciniki, 'ciniki.bugs', 'followup', $args['business_id'], 
+			'ciniki_bug_notes', 'ciniki_bug_history', 'bug', $bug_id, array(
+			'user_id'=>$ciniki['session']['user']['id'],
+			'bug_id'=>$bug_id,
+			'content'=>$args['notesfollowup']
 			));
 		if( $rc['stat'] != 'ok' ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
