@@ -122,24 +122,7 @@ function ciniki_bugs_get($ciniki) {
 	//
 	$user_ids = array($rc['bug']['user_id']);
 
-    //  
-    // Get the followups to the bug
-    //  
-//    $strsql = "SELECT id, bug_id, user_id, "
- //       . "DATE_FORMAT(date_added, '" . ciniki_core_dbQuote($ciniki, $datetime_format) . "') as date_added, "
-  //      . "CAST(UNIX_TIMESTAMP(UTC_TIMESTAMP())-UNIX_TIMESTAMP(date_added) as DECIMAL(12,0)) as age, "
-//		. "content "
-//		. "FROM ciniki_bug_followups "
- //       . "WHERE ciniki_bug_followups.bug_id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' "
-//		. "ORDER BY ciniki_bug_followups.date_added ASC "
- //       . ""; 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbRspQueryPlusUserIDs');
-//	$rc = ciniki_core_dbRspQueryPlusUserIDs($ciniki, $strsql, 'ciniki.bugs', 'followups', 'followup', array('stat'=>'ok', 'followups'=>array(), 'user_ids'=>array()));
-//	if( $rc['stat'] != 'ok' ) {
-//		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'467', 'msg'=>'Unable to load bug information', 'err'=>$rc['err']));
-//	}
-//	$bug['followups'] = $rc['followups'];
-//	$user_ids = array_merge($user_ids, $rc['user_ids']);
 
     //  
     // Get the followups to the bug
