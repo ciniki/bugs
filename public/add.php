@@ -41,7 +41,8 @@ function ciniki_bugs_add(&$ciniki) {
         'options'=>array('required'=>'no', 'blank'=>'no', 'default'=>0x03, 'name'=>'Flags'), 
 		'source'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Source'), 
 		'source_link'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Source Link'), 
-		'content'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Content'), 
+		'followup'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Content'), 
+        'notesfollowup'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Notes'), 
 		'assigned'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Assigned'),
 		));
 	if( $rc['stat'] != 'ok' ) {
@@ -145,13 +146,13 @@ function ciniki_bugs_add(&$ciniki) {
 	//
 	// Add a followup if they included details
 	//
-	if( isset($args['content']) && $args['content'] != '' ) {
+	if( isset($args['followup']) && $args['followup'] != '' ) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadAddFollowup');
 		$rc = ciniki_core_threadAddFollowup($ciniki, 'ciniki.bugs', 'followup', $args['business_id'], 
 			'ciniki_bug_followups', 'ciniki_bug_history', 'bug', $bug_id, array(
 			'user_id'=>$ciniki['session']['user']['id'],
 			'bug_id'=>$bug_id,
-			'content'=>$args['content']
+			'content'=>$args['followup']
 			));
 		if( $rc['stat'] != 'ok' ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
