@@ -178,7 +178,6 @@ function ciniki_bugs_bugList($ciniki) {
 	// Return two lists for open and closed
 	//
 	if( isset($args['order']) && $args['order'] == 'openclosed' ) {
-		error_log($strsql);
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.bugs', array(
 			array('container'=>'status', 'fname'=>'status', 'name'=>'status',
 				'fields'=>array('status', 'name'=>'status_text')),
