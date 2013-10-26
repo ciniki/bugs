@@ -16,13 +16,13 @@
 // -------
 // <rsp stat='ok' id='34' />
 //
-function ciniki_bugs_updateSettings($ciniki) {
+function ciniki_bugs_settingsUpdate($ciniki) {
     //  
     // Find all the required and optional arguments
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
+        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -34,7 +34,7 @@ function ciniki_bugs_updateSettings($ciniki) {
     // check permission to run this function for this business
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'checkAccess');
-    $rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.updateSettings', 0, 0); 
+    $rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.settingsUpdate', 0, 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   

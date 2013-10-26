@@ -20,15 +20,15 @@
 // -------
 // <rsp stat='ok' id='1' />
 //
-function ciniki_bugs_addFollowup(&$ciniki) {
+function ciniki_bugs_bugAddFollowup(&$ciniki) {
 	//
 	// Find all the required and optional arguments
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-		'bug_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No bug specified'),
-		'content'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No content'), 
+		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+		'bug_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Bug'),
+		'content'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Content'), 
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -39,7 +39,7 @@ function ciniki_bugs_addFollowup(&$ciniki) {
 	// Get the module settings
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'getSettings');
-	$rc = ciniki_bugs_getSettings($ciniki, $args['business_id'], 'ciniki.bugs.addFollowup');
+	$rc = ciniki_bugs_getSettings($ciniki, $args['business_id'], 'ciniki.bugs.bugAddFollowup');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
@@ -50,7 +50,7 @@ function ciniki_bugs_addFollowup(&$ciniki) {
 	// check permission to run this function for this business
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'checkAccess');
-	$rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.addFollowup', $args['bug_id'], 0);
+	$rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.bugAddFollowup', $args['bug_id'], 0);
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
@@ -152,7 +152,6 @@ function ciniki_bugs_addFollowup(&$ciniki) {
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
 	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'bugs');
-
 
 	return array('stat'=>'ok');
 }

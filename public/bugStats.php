@@ -11,13 +11,13 @@
 // Returns
 // -------
 //
-function ciniki_bugs_stats($ciniki) {
+function ciniki_bugs_bugStats($ciniki) {
     //  
     // Find all the required and optional arguments
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
+        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -29,7 +29,7 @@ function ciniki_bugs_stats($ciniki) {
     // check permission to run this function for this business
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'checkAccess');
-    $rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.stats', 0, 0); 
+    $rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.bugStats', 0, 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }

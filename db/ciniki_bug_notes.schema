@@ -6,10 +6,14 @@
 # Fields
 # ------
 # id:					The followup ID.
+# uuid:					The Universal Unique ID for the note.
+# business_id:			The ID of the business the bug is a part of.
+#
 # parent_id:			The parent to the followup.  This allows nexted replies.
 # bug_id:				The thread the followup is attached to.
 # user_id:				The thread name.
 # content:				The text content of the followup.  
+#
 # date_added:			The date and time the thread was added.
 # last_updated:			The date and time the thread was last updated.
 #

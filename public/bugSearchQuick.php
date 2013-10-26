@@ -7,15 +7,15 @@
 // Returns
 // -------
 //
-function ciniki_bugs_searchQuick($ciniki) {
+function ciniki_bugs_bugSearchQuick($ciniki) {
     //  
     // Find all the required and optional arguments
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-        'start_needle'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No search specified'), 
-        'limit'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No limit specified'), 
+        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'start_needle'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Search'), 
+        'limit'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Limit'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -27,7 +27,7 @@ function ciniki_bugs_searchQuick($ciniki) {
     // check permission to run this function for this business
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'checkAccess');
-    $rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.searchQuick', 0, 0); 
+    $rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.bugSearchQuick', 0, 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   

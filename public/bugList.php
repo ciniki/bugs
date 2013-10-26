@@ -26,7 +26,7 @@
 //		</1>
 // </users>
 //
-function ciniki_bugs_list($ciniki) {
+function ciniki_bugs_bugList($ciniki) {
 	//
 	// Find all the required and optional arguments
 	//
@@ -37,14 +37,11 @@ function ciniki_bugs_list($ciniki) {
 		'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'), 
 		'priority'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Priority'), 
 		'status'=>array('required'=>'Yes', 'blank'=>'no', 'name'=>'Status'),
-//		'state'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Open or Closed',
-//			'accepted'=>array('Open', 'Closed')), 
 		'subject'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Subject'), 
 		'source'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Source'), 
 		'source_link'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Source Link'), 
 		'limit'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Limit'), 
 		'order'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'), 
-
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -58,7 +55,7 @@ function ciniki_bugs_list($ciniki) {
 	// Get the module settings
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'getSettings');
-	$rc = ciniki_bugs_getSettings($ciniki, $args['business_id'], 'ciniki.bugs.list');
+	$rc = ciniki_bugs_getSettings($ciniki, $args['business_id'], 'ciniki.bugs.bugList');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
@@ -69,7 +66,7 @@ function ciniki_bugs_list($ciniki) {
 	// check permission to run this function for this business
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'checkAccess');
-	$rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.list', 0, 0);
+	$rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.bugList', 0, 0);
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
@@ -95,11 +92,17 @@ function ciniki_bugs_list($ciniki) {
 	// 
 	// Setup the SQL statement to insert the new thread
 	//
-	$strsql = "SELECT ciniki_bugs.id, ciniki_bugs.business_id, ciniki_bugs.user_id, "
-		. "ciniki_bugs.type, ciniki_bugs.priority, "
+	$strsql = "SELECT ciniki_bugs.id, "
+		. "ciniki_bugs.business_id, "
+		. "ciniki_bugs.user_id, "
+		. "ciniki_bugs.type, "
+		. "ciniki_bugs.priority, "
 //		. "CASE ciniki_bugs.type WHEN 1 THEN 'bugs' WHEN 2 THEN 'features' WHEN 3 THEN 'questions' END AS typename, "
-		. "ciniki_bugs.status, ciniki_bugs.subject, "
-		. "source, source_link, ciniki_bugs.status AS status_text, "
+		. "ciniki_bugs.status, "
+		. "ciniki_bugs.subject, "
+		. "ciniki_bugs.source, "
+		. "ciniki_bugs.source_link, "
+		. "ciniki_bugs.status AS status_text, "
 		. "DATE_FORMAT(CONVERT_TZ(ciniki_bugs.date_added, '+00:00', '" . ciniki_core_dbQuote($ciniki, $utc_offset) . "'), '" . ciniki_core_dbQuote($ciniki, $datetime_format) . "') AS date_added, "
 		. "DATE_FORMAT(CONVERT_TZ(ciniki_bugs.last_updated, '+00:00', '" . ciniki_core_dbQuote($ciniki, $utc_offset) . "'), '" . ciniki_core_dbQuote($ciniki, $datetime_format) . "') AS last_updated "
 		. ", IFNULL(u3.display_name, '') AS assigned_users "
@@ -118,9 +121,9 @@ function ciniki_bugs_list($ciniki) {
 	}
 
 	// status - optional
-	if( isset($args['status']) ) {
+	if( isset($args['status']) && $args['status'] != 'all' ) {
 		$strsql .= "AND ciniki_bugs.status = '" . ciniki_core_dbQuote($ciniki, $args['status']) . "' ";
-	} else {
+	} elseif( !isset($args['status']) || $args['status'] != 'all' ) {
 		//
 		// Default to open status
 		//
@@ -155,7 +158,9 @@ function ciniki_bugs_list($ciniki) {
 			. ") ";
 	}
 
-	if( isset($args['order']) && $args['order'] == 'latestupdated' ) {	
+	if( isset($args['order']) && $args['order'] == 'openclosed' ) {
+		$strsql .= "ORDER BY status, last_updated, id ";
+	} elseif( isset($args['order']) && $args['order'] == 'latestupdated' ) {	
 		$strsql .= "ORDER BY last_updated, id ";
 	} elseif( isset($args['order']) && $args['order'] == 'type' ) {
 		$strsql .= "ORDER BY type, last_updated, id ";
@@ -167,9 +172,42 @@ function ciniki_bugs_list($ciniki) {
 	if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {
 		$strsql .= "LIMIT " . ciniki_core_dbQuote($ciniki, $args['limit']) . " ";
 	}
-
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
-	if( isset($args['order']) && $args['order'] == 'type' ) {
+
+	//
+	// Return two lists for open and closed
+	//
+	if( isset($args['order']) && $args['order'] == 'openclosed' ) {
+		error_log($strsql);
+		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.bugs', array(
+			array('container'=>'status', 'fname'=>'status', 'name'=>'status',
+				'fields'=>array('status', 'name'=>'status_text')),
+			array('container'=>'bugs', 'fname'=>'id', 'name'=>'bug',
+				'fields'=>array('id', 'business_id', 'user_id', 'type', 'priority', 
+					'status', 'status_text', 'subject', 
+					'source', 'source_link', 'date_added', 'last_updated', 'assigned_users'),
+				'lists'=>array('assigned_users'),
+				'maps'=>array('status_text'=>array('0'=>'Unknown', '1'=>'Open', '60'=>'Closed'),
+					'type'=>array('1'=>'Bug', '2'=>'Feature', '3'=>'Question')) ),
+			));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		$rsp = array('stat'=>'ok', 'open'=>array(), 'closed'=>array());
+		foreach($rc['status'] as $s => $status) {
+			if( $status['status']['status'] == '1' ) {
+				$rsp['open'] = $status['status']['bugs'];
+			} elseif( $status['status']['status'] == '60' ) {
+				$rsp['closed'] = $status['status']['bugs'];
+			}
+		}
+		return $rsp;
+	} 
+
+	//
+	// Return bugs sorted by type
+	//
+	elseif( isset($args['order']) && $args['order'] == 'type' ) {
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.bugs', array(
 			array('container'=>'types', 'fname'=>'type', 'name'=>'type',
 				'fields'=>array('id'=>'type')),
@@ -197,7 +235,12 @@ function ciniki_bugs_list($ciniki) {
 			}
 		}
 		return $rsp;
-	} else {
+	} 
+
+	//
+	// Return a single list of bugs
+	//
+	else {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.bugs', array(
 			array('container'=>'bugs', 'fname'=>'id', 'name'=>'bug',
@@ -214,6 +257,7 @@ function ciniki_bugs_list($ciniki) {
 			return array('stat'=>'ok', 'bugs'=>array());
 		}
 	}
+
 	return $rc;
 }
 ?>

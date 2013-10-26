@@ -28,12 +28,6 @@
 #
 # category:			The category for the bug or feature.
 #
-# state:			The current state of the thread, which should be in a 
-#					customer friendly format.
-#					
-#					- Open
-#					- Closed
-#					
 # source:			Where the thread was created from: ciniki-manage, Website, etc.
 #
 #					Bug Examples:
@@ -73,14 +67,13 @@ create table ciniki_bugs (
 	priority tinyint unsigned not null,
 	status tinyint unsigned not null,
 	category varchar(150) not null,
-	state varchar(50) not null,
 	source varchar(50) not null,
 	source_link varchar(100) not null,
 	options tinyint unsigned not null,
 	date_added datetime not null,
 	last_updated datetime not null,
 	primary key (id),
-	index (business_id, user_id, state, source),
+	index (business_id, user_id, source),
 	index (priority, status),
 	index uuid (business_id, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.05';

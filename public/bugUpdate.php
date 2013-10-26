@@ -8,7 +8,7 @@
 // -------
 // <rsp stat='ok' id='34' />
 //
-function ciniki_bugs_update($ciniki) {
+function ciniki_bugs_bugUpdate($ciniki) {
     //  
     // Find all the required and optional arguments
     //  
@@ -36,7 +36,7 @@ function ciniki_bugs_update($ciniki) {
     // check permission to run this function for this business
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'checkAccess');
-    $rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.update', $args['bug_id'], $ciniki['session']['user']['id']); 
+    $rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.bugUpdate', $args['bug_id'], $ciniki['session']['user']['id']); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -55,39 +55,10 @@ function ciniki_bugs_update($ciniki) {
 		return $rc;
 	}   
 
-	//
-	// Add the order to the database
-	//
-	$strsql = "UPDATE ciniki_bugs SET last_updated = UTC_TIMESTAMP()";
-
-	//
-	// Add all the fields to the change log
-	//
-	$changelog_fields = array(
-		'type',
-		'priority',
-		'status',
-		'subject',
-		'category',
-		'options',
-		);
-	foreach($changelog_fields as $field) {
-		if( isset($args[$field]) ) {
-			$strsql .= ", $field = '" . ciniki_core_dbQuote($ciniki, $args[$field]) . "' ";
-			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.bugs', 'ciniki_bug_history', $args['business_id'], 
-				2, 'ciniki_bugs', $args['bug_id'], $field, $args[$field]);
-		}
-	}
-	$strsql .= "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' ";
-	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.bugs');
-	if( $rc['stat'] != 'ok' ) { 
-		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+	$rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.bugs.bug', $args['bug_id'], $args, 0x04);
+	if( $rc['stat'] != 'ok' ) {
 		return $rc;
-	}
-	if( !isset($rc['num_affected_rows']) || $rc['num_affected_rows'] != 1 ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'680', 'msg'=>'Unable to update task'));
 	}
 
 	//

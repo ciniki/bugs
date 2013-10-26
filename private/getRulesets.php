@@ -80,32 +80,32 @@ function ciniki_bugs_getRulesets($ciniki) {
 			'methods'=>array(
 				// Only business users assigned to bugs group, or the owner can call these methods
 				// Employee's not in the bugs group can't call these methods
-				'ciniki.bugs.assign'=>array('permission_groups'=>array('ciniki.owners', 'ciniki.bugs')),
-				'ciniki.bugs.close'=>array('permission_groups'=>array('ciniki.owners', 'ciniki.bugs')),
-				'ciniki.bugs.removeTag'=>array('permission_groups'=>array('ciniki.owners', 'ciniki.bugs')),
-				'ciniki.bugs.get'=>array('permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),
+				'ciniki.bugs.bugAssign'=>array('permission_groups'=>array('ciniki.owners', 'ciniki.bugs')),
+				'ciniki.bugs.bugClose'=>array('permission_groups'=>array('ciniki.owners', 'ciniki.bugs')),
+				'ciniki.bugs.bugRemoveTag'=>array('permission_groups'=>array('ciniki.owners', 'ciniki.bugs')),
+				'ciniki.bugs.bugGet'=>array('permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),
 
 				// any customer of the business, or employee or the owner
 				// employee's don't have to be in the bugs group to call these methods, but it's also allowed
-				'ciniki.bugs.add'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),
-				'ciniki.bugs.addFollowup'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),		
-				'ciniki.bugs.getFollowups'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),
-				'ciniki.bugs.list'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),
-				'ciniki.bugs.getSources'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),
-				'ciniki.bugs.getStates'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),
-				'ciniki.bugs.getTags'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),			
+				'ciniki.bugs.bugAdd'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),
+				'ciniki.bugs.bugAddFollowup'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),		
+				'ciniki.bugs.bugGetFollowups'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),
+				'ciniki.bugs.bugList'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),
+				'ciniki.bugs.bugGetSources'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),
+				'ciniki.bugs.bugGetStates'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),
+				'ciniki.bugs.bugGetTags'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),			
 
 				// Any customer can subscribe to follow a bug
-				'ciniki.bugs.subscribe'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),		
+				'ciniki.bugs.bugSubscribe'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),		
 
 				// Only if the customer started the bug, can they add a tag.
 				// Owners and employees in the Bug tracking group can add tags to any bug
-				'ciniki.bugs.addTag'=>array('customer'=>'bug_user', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),	
+				'ciniki.bugs.bugAddTag'=>array('customer'=>'bug_user', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),	
 
 				// Any customer can unsubscribe themselves from a thread
-				'ciniki.bugs.unsubscribe'=>array('customer'=>'self', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')), 	
+				'ciniki.bugs.bugUnsubscribe'=>array('customer'=>'self', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')), 	
 
-				'ciniki.bugs.search'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),
+				'ciniki.bugs.bugSearch'=>array('customer'=>'any', 'permission_groups'=>array('ciniki.owners', 'ciniki.employees', 'ciniki.bugs')),
 				)
 			),
 	);

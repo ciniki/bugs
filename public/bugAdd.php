@@ -20,7 +20,7 @@
 // -------
 // <rsp stat='ok' id='1' />
 //
-function ciniki_bugs_add(&$ciniki) {
+function ciniki_bugs_bugAdd(&$ciniki) {
 	//
 	// Track if the submitter should be emailed, if submitter is owner, we don't want to email twice
 	// 
@@ -32,8 +32,6 @@ function ciniki_bugs_add(&$ciniki) {
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
 		'type'=>array('required'=>'no', 'blank'=>'no', 'default'=>'1', 'name'=>'Type'), 
-//		'state'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Must specify Open or Closed',
-//			'accepted'=>array('Open', 'Closed')), 
 		'subject'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Subject'), 
 		'priority'=>array('required'=>'no', 'default'=>'10', 'blank'=>'yes', 'name'=>'Priority'), 
 		'status'=>array('required'=>'no', 'default'=>'1', 'blank'=>'no', 'name'=>'Status'), 
@@ -55,25 +53,25 @@ function ciniki_bugs_add(&$ciniki) {
 	}
 
 	//
+	// Make sure this module is activated, and
+	// check permission to run this function for this business
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'checkAccess');
+	$rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.bugAdd', 0, 0);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	
+	//
 	// Get the module settings
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'getSettings');
-	$rc = ciniki_bugs_getSettings($ciniki, $args['business_id'], 'ciniki.bugs.add');
+	$rc = ciniki_bugs_getSettings($ciniki, $args['business_id'], 'ciniki.bugs.bugAdd');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
 	$settings = $rc['settings'];
 
-	//
-	// Make sure this module is activated, and
-	// check permission to run this function for this business
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'checkAccess');
-	$rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.add', 0, 0);
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-	
 	//
 	// Setup the other arguments required for adding a thread.  These are arguments
 	// which should not come through the API, but be set within the API code.
@@ -96,52 +94,13 @@ function ciniki_bugs_add(&$ciniki) {
 		return $rc;
 	}
 
-	//
-	// Add the bug to the database using the thread libraries
-	//
-	$strsql = "INSERT INTO ciniki_bugs (business_id, type, priority, status, category, user_id, subject, "
-		. "source, source_link, options, "
-		. "date_added, last_updated) VALUES ("
-		. "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['type']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['priority']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['status']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['category']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['subject']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['source']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['source_link']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['options']) . "', "
-		. "UTC_TIMESTAMP(), UTC_TIMESTAMP())";
-	$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.bugs');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+	$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.bugs.bug', $args, 0x02);
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
 		return $rc;
 	}
-	$bug_id = $rc['insert_id'];
-	if( $bug_id < 1 ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'215', 'msg'=>'Internal Error', 'pmsg'=>'Unable to add bug.'));
-	}
-
-	//
-	// Add all the fields to the change log
-	//
-	$changelog_fields = array(
-		'type',
-		'priority',
-		'status',
-		'category',
-		'subject',
-		'source',
-		'source_link',
-		'options',
-		);
-	foreach($changelog_fields as $field) {
-		if( isset($args[$field]) && $args[$field] != '' ) {
-			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.bugs', 'ciniki_bug_history', $args['business_id'], 
-				1, 'ciniki_bugs', $bug_id, $field, $args[$field]);
-		}
-	}
+	$bug_id = $rc['id'];
 
 	//
 	// Add a followup if they included details
@@ -180,9 +139,8 @@ function ciniki_bugs_add(&$ciniki) {
 	//
 	// Attach the user to the ciniki_bug_users as a follower
 	// $ciniki, $module, $prefix, {$prefix}_id, settings
+	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadAddUserPerms');
-//	$rc = ciniki_core_threadAddFollower($ciniki, 'ciniki.bugs', 'user', $args['business_id'], 
-//		'ciniki_bug_users', 'ciniki_bug_history', 'bug', $bug_id, $ciniki['session']['user']['id']);
 	$rc = ciniki_core_threadAddUserPerms($ciniki, 'ciniki.bugs', 'user', $args['business_id'], 
 		'ciniki_bug_users', 'ciniki_bug_history', 
 		'bug', $bug_id, $ciniki['session']['user']['id'], (0x01));
@@ -219,14 +177,6 @@ function ciniki_bugs_add(&$ciniki) {
 		//
 		
 		// threadAddFollower($ciniki, 'bugs', 'bug', $bug_id, $user_id, array());
-	}
-
-	//
-	// FIXME: Add tags
-	//
-	if( isset($ciniki['request']['args']['tags']) && $ciniki['request']['args']['tags'] != '' ) {
-		// ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadAddTags');
-		// threadAddTags($ciniki, 'bugs', 'bug', $bug_id);
 	}
 
 	$rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.bugs');
@@ -268,7 +218,7 @@ function ciniki_bugs_add(&$ciniki) {
 			if( $user_id != $ciniki['session']['user']['id'] ) {
 				$ciniki['emailqueue'][] = array('user_id'=>$user_id,
 					'subject'=>$ciniki['session']['user']['display_name'] . ' submitted bug #' . $bug_id . ': ' . $args['subject'],
-					'textmsg'=>$args['content'],
+					'textmsg'=>$args['followup'],
 					);
 			}
 		}
@@ -298,8 +248,6 @@ function ciniki_bugs_add(&$ciniki) {
 					'subject'=>'New Bug #' . $bug_id, $args['subject'],
 					'textmsg'=>'Submitted: ' . $ciniki['session']['user']['display_name'],
 					);
-//				$headers = 'From: "' . $ciniki['config']['core']['system.email.name'] . '" <' . $ciniki['config']['core']['system.email'] . ">\r\n";
-//				mail($settings['bugs.add.notify.sms.email'], 'New Bug #' . $bug_id, $args['subject'], $headers, '-f' . $ciniki['config']['core']['system.email']);	
 			}
 		}
 	}

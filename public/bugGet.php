@@ -29,14 +29,14 @@
 // 	</users>
 // </rsp>
 //
-function ciniki_bugs_get($ciniki) {
+function ciniki_bugs_bugGet($ciniki) {
 	//
 	// Find all the required and optional arguments
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-		'bug_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No bug specified'), 
+		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+		'bug_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Bug'), 
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -47,7 +47,7 @@ function ciniki_bugs_get($ciniki) {
 	// Get the module options
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'getSettings');
-	$rc = ciniki_bugs_getSettings($ciniki, $args['business_id'], 'ciniki.bugs.get');
+	$rc = ciniki_bugs_getSettings($ciniki, $args['business_id'], 'ciniki.bugs.bugGet');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
@@ -58,7 +58,7 @@ function ciniki_bugs_get($ciniki) {
 	// check permission to run this function for this business
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'checkAccess');
-	$rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.get', $args['bug_id'], 0);
+	$rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.bugGet', $args['bug_id'], 0);
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
