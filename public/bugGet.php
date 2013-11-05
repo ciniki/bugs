@@ -200,12 +200,14 @@ function ciniki_bugs_bugGet($ciniki) {
 	//
 	// Fill in the followup information with user info
 	//
-	foreach($bug['followups'] as $fnum => $followup) {
-		$display_name = 'unknown';
-		if( isset($users[$followup['followup']['user_id']]) ) {
-			$display_name = $users[$followup['followup']['user_id']]['display_name'];
+	if( isset($bug['followups']) ) {
+		foreach($bug['followups'] as $fnum => $followup) {
+			$display_name = 'unknown';
+			if( isset($users[$followup['followup']['user_id']]) ) {
+				$display_name = $users[$followup['followup']['user_id']]['display_name'];
+			}
+			$bug['followups'][$fnum]['followup']['user_display_name'] = $display_name;
 		}
-		$bug['followups'][$fnum]['followup']['user_display_name'] = $display_name;
 	}
 
 	//
