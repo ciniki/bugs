@@ -36,6 +36,12 @@ function ciniki_bugs_bugStats($ciniki) {
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'timezoneOffset');
+	$utc_offset = ciniki_users_timezoneOffset($ciniki);
+
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'datetimeFormat');
+	$datetime_format = ciniki_users_datetimeFormat($ciniki);
+
 	$rsp = array('stat'=>'ok', 
 //		'bugs'=>array('priorities'=>array(
 //			'High'=>array('name'=>'High', 'count'=>'0'),
@@ -106,6 +112,46 @@ function ciniki_bugs_bugStats($ciniki) {
 		foreach($rc['types'] as $tnum => $type) {
 			$rsp[$type['type']['type_name']]['priorities'] = $type['type']['priorities'];
 		}
+	}
+
+	//
+	// Get the latest submissions from the last 72 hours that are open
+	//
+	$strsql = "SELECT ciniki_bugs.id, "
+		. "ciniki_bugs.business_id, "
+		. "ciniki_bugs.user_id, "
+		. "ciniki_bugs.type, "
+		. "ciniki_bugs.priority, "
+		. "ciniki_bugs.status, "
+		. "ciniki_bugs.subject, "
+		. "ciniki_bugs.source, "
+		. "ciniki_bugs.source_link, "
+		. "ciniki_bugs.status AS status_text, "
+		. "DATE_FORMAT(CONVERT_TZ(ciniki_bugs.date_added, '+00:00', '" . ciniki_core_dbQuote($ciniki, $utc_offset) . "'), '" . ciniki_core_dbQuote($ciniki, $datetime_format) . "') AS date_added, "
+		. "DATE_FORMAT(CONVERT_TZ(ciniki_bugs.last_updated, '+00:00', '" . ciniki_core_dbQuote($ciniki, $utc_offset) . "'), '" . ciniki_core_dbQuote($ciniki, $datetime_format) . "') AS last_updated "
+		. "FROM ciniki_bugs "
+		. "WHERE ciniki_bugs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "AND ciniki_bugs.status = 1 "
+		. "AND UNIX_TIMESTAMP(ciniki_bugs.date_added) > (UNIX_TIMESTAMP() - 259200) "
+		. "ORDER BY date_added "
+		. "LIMIT 15"
+		. "";
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
+	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.bugs', array(
+		array('container'=>'bugs', 'fname'=>'id', 'name'=>'bug',
+			'fields'=>array('id', 'business_id', 'user_id', 'type', 'priority', 
+				'status', 'status_text', 'subject', 
+				'source', 'source_link', 'date_added', 'last_updated'),
+			'maps'=>array('status_text'=>array('0'=>'Unknown', '1'=>'Open', '60'=>'Closed'),
+				'type'=>array('1'=>'Bug', '2'=>'Feature', '3'=>'Question')) ),
+		));
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	if( isset($rc['bugs']) ) {
+		$rsp['latest'] = $rc['bugs'];
+	} else {
+		$rsp['latest'] = array();
 	}
 
 	return $rsp;
