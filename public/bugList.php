@@ -161,7 +161,7 @@ function ciniki_bugs_bugList($ciniki) {
 	if( isset($args['order']) && $args['order'] == 'openclosed' ) {
 		$strsql .= "ORDER BY status, last_updated, id ";
 	} elseif( isset($args['order']) && $args['order'] == 'latestupdated' ) {	
-		$strsql .= "ORDER BY last_updated, id ";
+		$strsql .= "ORDER BY last_updated DESC, id ";
 	} elseif( isset($args['order']) && $args['order'] == 'type' ) {
 		$strsql .= "ORDER BY type, last_updated, id ";
 	} else {
