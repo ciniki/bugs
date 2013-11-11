@@ -133,7 +133,7 @@ function ciniki_bugs_bugStats($ciniki) {
 		. "WHERE ciniki_bugs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND ciniki_bugs.status = 1 "
 		. "AND UNIX_TIMESTAMP(ciniki_bugs.date_added) > (UNIX_TIMESTAMP() - 259200) "
-		. "ORDER BY date_added "
+		. "ORDER BY date_added DESC "
 		. "LIMIT 15"
 		. "";
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
