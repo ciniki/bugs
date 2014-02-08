@@ -11,7 +11,10 @@
 #
 # Fields
 # ------
-# bug_id:		The thread the user is following.
+# id:				The ID of the bug user record.
+# uuid:				The Universal Unique ID for the record.
+# business_id:		The ID of the business the bug user belongs to.
+# bug_id:			The thread the user is following.
 # user_id:			The user following the thread.
 # perms:			The bits to determine how the user is attached to the thread.
 #					

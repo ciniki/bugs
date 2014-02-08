@@ -8,6 +8,7 @@
 # Fields
 # ------
 # id:				The thread ID.
+# uuid:				The Universal Unique ID for the bug.
 # business_id:		The business the thread is for.
 # user_id:			The user who created the bug.
 # subject:			The thread subject/name/question/header/title/etc...
