@@ -209,12 +209,12 @@ function ciniki_bugs_main() {
 				'last_updated':{'label':'Updated'},
 				'followers':{'label':'Followers'},
 				}},
-			'thread':{'label':'', 'aside':'no', 'type':'simplethread'},
-			'_followup':{'label':'Add your response', 'aside':'no', 'fields':{
+			'thread':{'label':'', 'type':'simplethread'},
+			'_followup':{'label':'Add your response', 'fields':{
 				'followup':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small', 'history':'no'},
 				}},
-			'notesthread':{'label':'Private Notes', 'aside':'no', 'type':'simplethread'},
-			'_notes':{'label':'', 'aside':'no', 'fields':{
+			'notesthread':{'label':'Private Notes', 'type':'simplethread'},
+			'_notes':{'label':'', 'fields':{
 				'notesfollowup':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small', 'history':'no'},
 				}},
 			'_save':{'label':'', 'type':'simplebuttons', 'buttons':{
@@ -240,12 +240,12 @@ function ciniki_bugs_main() {
 				'last_updated':{'label':'Updated'},
 				'followers':{'label':'Followers'},
 				}},
-			'thread':{'label':'', 'aside':'no', 'type':'simplethread'},
-			'_followup':{'label':'Add your response', 'aside':'no', 'fields':{
+			'thread':{'label':'', 'type':'simplethread'},
+			'_followup':{'label':'Add your response', 'fields':{
 				'followup':{'label':'Details', 'hidelabel':'yes', 'type':'textarea', 'size':'small', 'history':'no'},
 				}},
-			'notesthread':{'label':'Private Notes', 'aside':'no', 'type':'simplethread'},
-			'_notes':{'label':'', 'aside':'no', 'fields':{
+			'notesthread':{'label':'Private Notes', 'type':'simplethread'},
+			'_notes':{'label':'', 'fields':{
 				'notesfollowup':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small', 'history':'no'},
 				}},
 			'_save':{'label':'', 'type':'simplebuttons', 'buttons':{
@@ -271,12 +271,12 @@ function ciniki_bugs_main() {
 				'last_updated':{'label':'Updated'},
 				'followers':{'label':'Followers'},
 				}},
-			'thread':{'label':'', 'aside':'no', 'type':'simplethread'},
-			'_followup':{'label':'Add your response', 'aside':'no', 'fields':{
+			'thread':{'label':'', 'type':'simplethread'},
+			'_followup':{'label':'Add your response', 'fields':{
 				'followup':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small', 'history':'no'},
 				}},
-			'notesthread':{'label':'Private Notes', 'aside':'no', 'type':'simplethread'},
-			'_notes':{'label':'', 'aside':'no', 'fields':{
+			'notesthread':{'label':'Private Notes', 'type':'simplethread'},
+			'_notes':{'label':'', 'fields':{
 				'notesfollowup':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small', 'history':'no'},
 				}},
 			'_save':{'label':'', 'type':'simplebuttons', 'buttons':{
