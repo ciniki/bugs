@@ -8,7 +8,7 @@
 // -------
 // <rsp stat='ok' id='34' />
 //
-function ciniki_bugs_bugUpdate($ciniki) {
+function ciniki_bugs_bugUpdate(&$ciniki) {
     //  
     // Find all the required and optional arguments
     //  
@@ -124,6 +124,31 @@ function ciniki_bugs_bugUpdate($ciniki) {
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
 			return $rc;
 		}
+
+		//
+		// Get the subject
+		//
+		$strsql = "SELECT subject "
+			. "FROM ciniki_bugs "
+			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' "
+			. "";
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
+		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.bugs', 'bug');
+		if( $rc['stat'] != 'ok' || !isset($rc['bug']) || !is_array($rc['bug']) ) {
+			return $rc;
+		}
+		$bug = $rc['bug'];
+
+		//
+		// Notify the other users on this thread there was an update.
+		//
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadNotifyUsers');
+		$rc = ciniki_core_threadNotifyUsers($ciniki, 'ciniki.bugs', 'ciniki_bug_users', 'bug', 
+			$args['bug_id'], 0x01, 
+			$ciniki['session']['user']['display_name'] . " replied to bug #" . $args['bug_id'] . ': ' . $bug['subject'], 
+			$args['followup'] . "\n\n"
+		);
 	}
 
 	//
