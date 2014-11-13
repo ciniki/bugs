@@ -120,7 +120,7 @@ function ciniki_bugs_bugGet($ciniki) {
 	//
 	// Setup the array to hold all the user_ids
 	//
-	$user_ids = array($rc['bug']['user_id']);
+	$user_ids = array($bug['user_id']);
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbRspQueryPlusUserIDs');
 
@@ -135,6 +135,9 @@ function ciniki_bugs_bugGet($ciniki) {
 	}
 	if( isset($rc['followups']) ) {
 		$bug['followups'] = $rc['followups'];
+	}
+	foreach($bug['followups'] as $followup) {
+		$user_ids[] = $followup['followup']['user_id'];
 	}
 
     //  

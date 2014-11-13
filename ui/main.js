@@ -316,21 +316,21 @@ function ciniki_bugs_main() {
 		};
 		this.edit.sectionData = function(s) {
 			if( s == 'info' ) { return this.sections[s].list; }
-			if( s == 'thread' ) { return this.data['followups']; }
-			if( s == 'notesthread' ) { return this.data['notes']; }
+			if( s == 'thread' ) { return this.data.followups; }
+			if( s == 'notesthread' ) { return this.data.notes; }
 		};
-		this.edit.sectionLabel = function(s, d) { return d['label']; }
+		this.edit.sectionLabel = function(s, d) { return d.label; }
 		this.edit.threadSubject = function(s) { 
 			if( s == 'thread' ) { return this.subject; }
 			return null;
 		};
-		this.edit.threadFollowupUser = function(s, i, d) { return d['followup']['user_display_name']; }
-		this.edit.threadFollowupAge = function(s, i, d) { return d['followup']['age']; }
-		this.edit.threadFollowupContent = function(s, i, d) { return d['followup']['content']; }
+		this.edit.threadFollowupUser = function(s, i, d) { return d.followup.user_display_name; }
+		this.edit.threadFollowupAge = function(s, i, d) { return d.followup.age; }
+		this.edit.threadFollowupContent = function(s, i, d) { return d.followup.content; }
 		this.edit.liveSearchCb = function(s, i, value) {
 			if( i == 'category' ) {
-				var rsp = M.api.getJSONBgCb('ciniki.bugs.bugSearchField', {'business_id':M.curBusinessID, 'field':i, 'start_needle':value, 'limit':15},
-					function(rsp) {
+				var rsp = M.api.getJSONBgCb('ciniki.bugs.bugSearchField', {'business_id':M.curBusinessID, 
+					'field':i, 'start_needle':value, 'limit':15}, function(rsp) {
 						M.ciniki_bugs_main.edit.liveSearchShow(s, i, M.gE(M.ciniki_bugs_main.edit.panelUID + '_' + i), rsp.results);
 					});
 			}
