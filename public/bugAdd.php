@@ -218,7 +218,7 @@ function ciniki_bugs_bugAdd(&$ciniki) {
 			if( $user_id != $ciniki['session']['user']['id'] ) {
 				$ciniki['emailqueue'][] = array('user_id'=>$user_id,
 					'subject'=>$ciniki['session']['user']['display_name'] . ' submitted bug #' . $bug_id . ': ' . $args['subject'],
-					'textmsg'=>$args['followup'],
+					'textmsg'=>($args['followup']!=''?$args['followup']:'No details'),
 					);
 			}
 		}
@@ -245,8 +245,8 @@ function ciniki_bugs_bugAdd(&$ciniki) {
 		foreach($emails as $email) {
 			if( $email != '' ) {
 				$ciniki['emailqueue'][] = array('to'=>$settings['bugs.add.notify.sms.email'],
-					'subject'=>'New Bug #' . $bug_id, $args['subject'],
-					'textmsg'=>'Submitted: ' . $ciniki['session']['user']['display_name'],
+					'subject'=>'New Bug #' . $bug_id,
+					'textmsg'=>$ciniki['session']['user']['display_name'] . ':' . $args['subject'],
 					);
 			}
 		}
