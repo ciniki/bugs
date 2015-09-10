@@ -142,6 +142,13 @@ function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_
 	}
 	
 	//
+	// Sysadmins are allowed full access
+	//
+	if( ($ciniki['session']['user']['perms'] & 0x01) == 0x01 ) {
+		return array('stat'=>'ok');
+	}
+
+	//
 	// By default, fail
 	//
 	return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'207', 'msg'=>'Access denied.'));
