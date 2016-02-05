@@ -231,7 +231,7 @@ function ciniki_bugs_bugAdd(&$ciniki) {
 	if( $email_submitter == 'yes' ) {
 		$ciniki['emailqueue'][] = array('user_id'=>$ciniki['session']['user']['id'],
 			'subject'=>'Bug #' . $bug_id . ': ' . $args['subject'] . ' submitted',
-			'textmsg'=>'Thank you for submitting a bug/feature request.  I have alerted the approriate people and we will look into it.',
+			'textmsg'=>'Thank you for submitting a bug/feature request.  I have alerted the appropriate people and we will look into it.',
 			);
 	}
 
