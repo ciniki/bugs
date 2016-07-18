@@ -7,74 +7,74 @@
 #
 # Fields
 # ------
-# id:				The thread ID.
-# uuid:				The Universal Unique ID for the bug.
-# business_id:		The business the thread is for.
-# user_id:			The user who created the bug.
-# subject:			The thread subject/name/question/header/title/etc...
-# type:				Is this a bug or a feature request.
+# id:               The thread ID.
+# uuid:             The Universal Unique ID for the bug.
+# business_id:      The business the thread is for.
+# user_id:          The user who created the bug.
+# subject:          The thread subject/name/question/header/title/etc...
+# type:             Is this a bug or a feature request.
 #
-#					1 - bug
-#					2 - feature
-#					3 - question
+#                   1 - bug
+#                   2 - feature
+#                   3 - question
 #
-# priority:			0 - unknown
-#					10 - low
-#					30 - medium
-#					50 - high
+# priority:         0 - unknown
+#                   10 - low
+#                   30 - medium
+#                   50 - high
 #
-# status:			0 - unknown
-#					1 - Open
-#					60 - Closed/Completed
+# status:           0 - unknown
+#                   1 - Open
+#                   60 - Closed/Completed
 #
-# category:			The category for the bug or feature.
+# category:         The category for the bug or feature.
 #
-# source:			Where the thread was created from: ciniki-manage, Website, etc.
+# source:           Where the thread was created from: ciniki-manage, Website, etc.
 #
-#					Bug Examples:
-#					_ ciniki-manage
-#					_ website
+#                   Bug Examples:
+#                   _ ciniki-manage
+#                   _ website
 #
-#					ciniki-manage Help Question and Answers:
-#					_ ciniki-manage
+#                   ciniki-manage Help Question and Answers:
+#                   _ ciniki-manage
 #
-#					Business Bug Tracking
-#					_ 3rdParyApp
+#                   Business Bug Tracking
+#                   _ 3rdParyApp
 #
-# source_link:		This file is an ID from the calling system.  So, if called from
-#					ciniki-manage to insert a thread, then the source is ciniki-manage, and source_link could be the
-#					the menu UID where the thread was started.
+# source_link:      This file is an ID from the calling system.  So, if called from
+#                   ciniki-manage to insert a thread, then the source is ciniki-manage, and source_link could be the
+#                   the menu UID where the thread was started.
 #
-# options:			The options available for a thread.
+# options:          The options available for a thread.
 #
-#					_ 0x01 - notify creator, if in bug_users table.
-#					_ 0x02 - notify followers, if in bug_users table.
-#					_ 0x04 - 
-#					_ 0x08 - 
-#					_ 0x10 - Public, display for all to see, default is private
-#					_ 0x20 - Public for users, do not display on website, default is private
-#					
+#                   _ 0x01 - notify creator, if in bug_users table.
+#                   _ 0x02 - notify followers, if in bug_users table.
+#                   _ 0x04 - 
+#                   _ 0x08 - 
+#                   _ 0x10 - Public, display for all to see, default is private
+#                   _ 0x20 - Public for users, do not display on website, default is private
+#                   
 #
-# date_added:		The UTC date and time the thread was added.
-# last_updated:		The UTC date and time the thread was last updated.
+# date_added:       The UTC date and time the thread was added.
+# last_updated:     The UTC date and time the thread was last updated.
 #
 create table ciniki_bugs (
-	id int not null auto_increment,
-	uuid char(36) not null,
-	business_id int not null,
-	user_id int not null,
-	subject varchar(140) not null,
-	type tinyint unsigned not null,
-	priority tinyint unsigned not null,
-	status tinyint unsigned not null,
-	category varchar(150) not null,
-	source varchar(50) not null,
-	source_link varchar(100) not null,
-	options tinyint unsigned not null,
-	date_added datetime not null,
-	last_updated datetime not null,
-	primary key (id),
-	index (business_id, user_id, source),
-	index (priority, status),
-	index uuid (business_id, uuid, last_updated)
+    id int not null auto_increment,
+    uuid char(36) not null,
+    business_id int not null,
+    user_id int not null,
+    subject varchar(140) not null,
+    type tinyint unsigned not null,
+    priority tinyint unsigned not null,
+    status tinyint unsigned not null,
+    category varchar(150) not null,
+    source varchar(50) not null,
+    source_link varchar(100) not null,
+    options tinyint unsigned not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    index (business_id, user_id, source),
+    index (priority, status),
+    index uuid (business_id, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.05';

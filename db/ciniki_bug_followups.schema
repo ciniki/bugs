@@ -5,29 +5,29 @@
 #
 # Fields
 # ------
-# id:					The followup ID.
-# uuid:					The Universal Unique ID for each bug.
-# business_id:			The ID of the business the followup is a part of.
+# id:                   The followup ID.
+# uuid:                 The Universal Unique ID for each bug.
+# business_id:          The ID of the business the followup is a part of.
 #
-# parent_id:			The parent to the followup.  This allows nexted replies.
-# bug_id:				The thread the followup is attached to.
-# user_id:				The thread name.
-# content:				The text content of the followup.  
+# parent_id:            The parent to the followup.  This allows nexted replies.
+# bug_id:               The thread the followup is attached to.
+# user_id:              The thread name.
+# content:              The text content of the followup.  
 #
-# date_added:			The UTC date and time the thread was added.
-# last_updated:			The UTC date and time the thread was last updated.
+# date_added:           The UTC date and time the thread was added.
+# last_updated:         The UTC date and time the thread was last updated.
 #
 create table ciniki_bug_followups (
-	id bigint not null auto_increment,
-	uuid char(36) not null,
-	business_id int not null,
-	parent_id bigint not null,
-	bug_id int not null,
-	user_id int not null,
-	content text,
-	date_added datetime not null,
-	last_updated datetime not null,
-	primary key (id),
-	index (bug_id, user_id),
-	index (business_id, uuid, last_updated)
+    id bigint not null auto_increment,
+    uuid char(36) not null,
+    business_id int not null,
+    parent_id bigint not null,
+    bug_id int not null,
+    user_id int not null,
+    content text,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    index (bug_id, user_id),
+    index (business_id, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.03';

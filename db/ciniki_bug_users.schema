@@ -11,34 +11,34 @@
 #
 # Fields
 # ------
-# id:				The ID of the bug user record.
-# uuid:				The Universal Unique ID for the record.
-# business_id:		The ID of the business the bug user belongs to.
-# bug_id:			The thread the user is following.
-# user_id:			The user following the thread.
-# perms:			The bits to determine how the user is attached to the thread.
-#					
-#					_ 0x01 - following, notify via email of updates/changes in thread.
-#					_ 0x02 - assigned, used to assign bugs to developers for tracking.
+# id:               The ID of the bug user record.
+# uuid:             The Universal Unique ID for the record.
+# business_id:      The ID of the business the bug user belongs to.
+# bug_id:           The thread the user is following.
+# user_id:          The user following the thread.
+# perms:            The bits to determine how the user is attached to the thread.
+#                   
+#                   _ 0x01 - following, notify via email of updates/changes in thread.
+#                   _ 0x02 - assigned, used to assign bugs to developers for tracking.
 #
-# 					If the status is 0, then the user is not to be notified about updates. 
-# 					The status should be set to 0 so future comments by the user, do not
-# 					change this unless this wish.  If the entry was removed, the next comment
-#					they make would add the entry back.
+#                   If the status is 0, then the user is not to be notified about updates. 
+#                   The status should be set to 0 so future comments by the user, do not
+#                   change this unless this wish.  If the entry was removed, the next comment
+#                   they make would add the entry back.
 #
-# date_added:		The date and time the user subscribed to this thread.
-# last_updated:		The date and time the status was last changed.
+# date_added:       The date and time the user subscribed to this thread.
+# last_updated:     The date and time the status was last changed.
 #
 create table ciniki_bug_users (
-	id int not null auto_increment,
-	uuid char(36) not null,
-	business_id int not null,
-	bug_id int not null,
-	user_id varchar(50) not null,
-	perms tinyint unsigned not null,
-	date_added datetime not null,
-	last_updated datetime not null,
-	primary key (id),
-	unique index (bug_id, user_id),
-	index (business_id, uuid, last_updated)
+    id int not null auto_increment,
+    uuid char(36) not null,
+    business_id int not null,
+    bug_id int not null,
+    user_id varchar(50) not null,
+    perms tinyint unsigned not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (bug_id, user_id),
+    index (business_id, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.03';

@@ -6,11 +6,11 @@
 //
 // Info
 // ----
-// Status: 			started
+// Status:          started
 //
 // Arguments
 // ---------
-// user_id: 		The user making the request
+// user_id:         The user making the request
 // 
 // Returns
 // -------
@@ -37,19 +37,19 @@ function ciniki_bugs_settingsGet($ciniki) {
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
-	
-	//
-	// Grab the settings for the business from the database
-	//
+    
+    //
+    // Grab the settings for the business from the database
+    //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQuery');
-	$rc = ciniki_core_dbDetailsQuery($ciniki, 'ciniki_bug_settings', 'business_id', $args['business_id'], 'ciniki.bugs', 'settings', '');
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
+    $rc = ciniki_core_dbDetailsQuery($ciniki, 'ciniki_bug_settings', 'business_id', $args['business_id'], 'ciniki.bugs', 'settings', '');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
 
-	//
-	// Return the response, including colour arrays and todays date
-	//
-	return $rc;
+    //
+    // Return the response, including colour arrays and todays date
+    //
+    return $rc;
 }
 ?>
