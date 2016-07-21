@@ -135,6 +135,8 @@ function ciniki_bugs_bugGet($ciniki) {
     }
     if( isset($rc['followups']) ) {
         $bug['followups'] = $rc['followups'];
+    } else {
+        $bug['followups'] = array();
     }
     foreach($bug['followups'] as $followup) {
         $user_ids[] = $followup['followup']['user_id'];
