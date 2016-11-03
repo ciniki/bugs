@@ -103,10 +103,10 @@ function ciniki_bugs_bugGet($ciniki) {
     $strsql .= "LIMIT 1 ";  // Will get multiple rows when joined to ciniki_bug_users table
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.bugs', 'bug');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'468', 'msg'=>'Unable to load bug information', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.bugs.7', 'msg'=>'Unable to load bug information', 'err'=>$rc['err']));
     }
     if( !isset($rc['bug']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'469', 'msg'=>'Unable to load bug information'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.bugs.8', 'msg'=>'Unable to load bug information'));
     }
     // Setup a array to hold all the bug information
     $bug = $rc['bug'];
@@ -131,7 +131,7 @@ function ciniki_bugs_bugGet($ciniki) {
     $rc = ciniki_core_threadGetFollowups($ciniki, 'ciniki.bugs', 'ciniki_bug_followups', 
         'bug', $args['bug_id'], array());
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'467', 'msg'=>'Unable to load bug followups', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.bugs.9', 'msg'=>'Unable to load bug followups', 'err'=>$rc['err']));
     }
     if( isset($rc['followups']) ) {
         $bug['followups'] = $rc['followups'];
@@ -149,7 +149,7 @@ function ciniki_bugs_bugGet($ciniki) {
     $rc = ciniki_core_threadGetFollowups($ciniki, 'ciniki.bugs', 'ciniki_bug_notes', 
         'bug', $args['bug_id'], array());
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1335', 'msg'=>'Unable to load bug notes', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.bugs.10', 'msg'=>'Unable to load bug notes', 'err'=>$rc['err']));
     }
     if( isset($rc['followups']) ) {
         $bug['notes'] = $rc['followups'];
@@ -163,7 +163,7 @@ function ciniki_bugs_bugGet($ciniki) {
         . "WHERE bug_id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' ";
     $rc = ciniki_core_dbRspQueryPlusUserIDs($ciniki, $strsql, 'ciniki.bugs', 'users', 'user', array('stat'=>'ok', 'users'=>array(), 'user_ids'=>array()));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'472', 'msg'=>'Unable to load bug information', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.bugs.11', 'msg'=>'Unable to load bug information', 'err'=>$rc['err']));
     }
     $bug_users = $rc['users'];
     $user_ids = array_merge($user_ids, $rc['user_ids']);
@@ -174,10 +174,10 @@ function ciniki_bugs_bugGet($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'userListByID');
     $rc = ciniki_users_userListByID($ciniki, 'users', $user_ids, 'display_name');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'470', 'msg'=>'Unable to load bug information', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.bugs.12', 'msg'=>'Unable to load bug information', 'err'=>$rc['err']));
     }
     if( !isset($rc['users']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'471', 'msg'=>'Unable to load bug information', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.bugs.13', 'msg'=>'Unable to load bug information', 'err'=>$rc['err']));
     }
     $users = $rc['users'];
 

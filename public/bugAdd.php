@@ -209,7 +209,7 @@ function ciniki_bugs_bugAdd(&$ciniki) {
             . "";
         $rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.bugs', 'user_ids', 'user_id');
         if( $rc['stat'] != 'ok' || !isset($rc['user_ids']) || !is_array($rc['user_ids']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'206', 'msg'=>'Unable to find users', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.bugs.6', 'msg'=>'Unable to find users', 'err'=>$rc['err']));
         }
         
         foreach($rc['user_ids'] as $user_id) {

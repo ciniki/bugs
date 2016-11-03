@@ -21,7 +21,7 @@ function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_
     }
 
     if( !isset($rc['ruleset']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'203', 'msg'=>'No permissions granted'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.bugs.1', 'msg'=>'No permissions granted'));
     }
     $modules = $rc['modules'];
 
@@ -35,7 +35,7 @@ function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_
     // Check to see if the ruleset is valid
     //
     if( !isset($rulesets[$rc['ruleset']]) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'204', 'msg'=>'Access denied.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.bugs.2', 'msg'=>'Access denied.'));
     }
     $ruleset = $rc['ruleset'];
 
@@ -50,7 +50,7 @@ function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_
         // The default ruleset for all methods if not specified
         $rules = $rulesets[$ruleset]['default'];
     } else {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'205', 'msg'=>'Access denied.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.bugs.3', 'msg'=>'Access denied.'));
     }
 
 
@@ -73,7 +73,7 @@ function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.businesses', 'user');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'514', 'msg'=>'Access denied.', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.bugs.4', 'msg'=>'Access denied.', 'err'=>$rc['err']));
         }
         
         //
@@ -151,6 +151,6 @@ function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_
     //
     // By default, fail
     //
-    return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'207', 'msg'=>'Access denied.'));
+    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.bugs.5', 'msg'=>'Access denied.'));
 }
 ?>

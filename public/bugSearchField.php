@@ -38,7 +38,7 @@ function ciniki_bugs_bugSearchField($ciniki) {
     //
     if( $args['field'] != 'category'
         ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'663', 'msg'=>'Unvalid search field'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.bugs.14', 'msg'=>'Unvalid search field'));
     }
     //
     // Get the number of faqs in each status for the business, 
