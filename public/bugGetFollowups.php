@@ -12,7 +12,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The business the bug is attached to.
+// tnid:         The tenant the bug is attached to.
 // name:                The very brief bug description.
 // bug_text:            (optional) The longer description or additional details for the bug.
 // 
@@ -33,7 +33,7 @@ function ciniki_bugs_bugGetFollowups($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'bug_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Bug'), 
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -45,7 +45,7 @@ function ciniki_bugs_bugGetFollowups($ciniki) {
     // Get the module options
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'getSettings');
-    $rc = ciniki_bugs_getSettings($ciniki, $args['business_id'], 'ciniki.bugs.bugGetFollowups');
+    $rc = ciniki_bugs_getSettings($ciniki, $args['tnid'], 'ciniki.bugs.bugGetFollowups');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -53,10 +53,10 @@ function ciniki_bugs_bugGetFollowups($ciniki) {
 
     //
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'checkAccess');
-    $rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.bugGetFollowups', $args['bug_id'], 0);
+    $rc = ciniki_bugs_checkAccess($ciniki, $args['tnid'], 'ciniki.bugs.bugGetFollowups', $args['bug_id'], 0);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }

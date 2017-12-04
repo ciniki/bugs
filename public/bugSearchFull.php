@@ -13,7 +13,7 @@ function ciniki_bugs_bugSearchFull($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'start_needle'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Search String'), 
         'status'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Status'), 
         'limit'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Limit'), 
@@ -25,16 +25,16 @@ function ciniki_bugs_bugSearchFull($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'checkAccess');
-    $rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.bugSearchFull', 0, 0); 
+    $rc = ciniki_bugs_checkAccess($ciniki, $args['tnid'], 'ciniki.bugs.bugSearchFull', 0, 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
 
     //
-    // Get the number of messages in each status for the business, 
+    // Get the number of messages in each status for the tenant, 
     // if no rows found, then return empty array
     //
     $strsql = "SELECT ciniki_bugs.id, type, priority, ciniki_bugs.status, subject, source, source_link, "
@@ -45,7 +45,7 @@ function ciniki_bugs_bugSearchFull($ciniki) {
         . "LEFT JOIN ciniki_bug_users AS u2 ON (ciniki_bugs.id = u2.bug_id && (u2.perms&0x02) = 2) "
         . "LEFT JOIN ciniki_users AS u3 ON (u2.user_id = u3.id) "
         . "LEFT JOIN ciniki_bug_followups ON (ciniki_bugs.id = ciniki_bug_followups.bug_id) "
-        . "WHERE ciniki_bugs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_bugs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ciniki_bugs.status = '" . ciniki_core_dbQuote($ciniki, $args['status']) . "' "       // Open bugs/features
         . "AND (subject LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR subject LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' ";
@@ -61,7 +61,7 @@ function ciniki_bugs_bugSearchFull($ciniki) {
     $strsql .= ") "
         . "";
     // Check for public/private bugs, and if private make sure user created or is assigned
-//  $strsql .= "AND ((perm_flags&0x01) = 0 "  // Public to business
+//  $strsql .= "AND ((perm_flags&0x01) = 0 "  // Public to tenant
 //          // created by the user requesting the list
 //          . "OR ((perm_flags&0x01) = 1 AND ciniki_bugs.user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "') "
 //          // Assigned to the user requesting the list, and the user hasn't deleted the message

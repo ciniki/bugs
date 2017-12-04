@@ -1,7 +1,7 @@
 #
-# This file will upgrade the database table businesses to version 1.02.
+# This file will upgrade the database table tenants to version 1.02.
 #
 ALTER TABLE ciniki_bugs ADD COLUMN uuid char(36) not null AFTER id;
 UPDATE ciniki_bugs SET uuid = uuid();
-CREATE INDEX uuid ON ciniki_bugs (business_id, uuid, last_updated);
+CREATE INDEX uuid ON ciniki_bugs (tnid, uuid, last_updated);
 ALTER TABLE ciniki_bugs COMMENT='v1.05';

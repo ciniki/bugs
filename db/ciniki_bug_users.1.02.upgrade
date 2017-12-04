@@ -1,5 +1,5 @@
 #
-# This file will upgrade the database table businesses to version 1.02.
+# This file will upgrade the database table tenants to version 1.02.
 #
 ALTER TABLE ciniki_bug_users ADD COLUMN date_added datetime not null;
 ALTER TABLE ciniki_bug_users ADD COLUMN last_updated datetime not null;

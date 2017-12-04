@@ -13,7 +13,7 @@
 # ------
 # id:               The ID of the bug user record.
 # uuid:             The Universal Unique ID for the record.
-# business_id:      The ID of the business the bug user belongs to.
+# tnid:             The ID of the tenant the bug user belongs to.
 # bug_id:           The thread the user is following.
 # user_id:          The user following the thread.
 # perms:            The bits to determine how the user is attached to the thread.
@@ -32,7 +32,7 @@
 create table ciniki_bug_users (
     id int not null auto_increment,
     uuid char(36) not null,
-    business_id int not null,
+    tnid int not null,
     bug_id int not null,
     user_id varchar(50) not null,
     perms tinyint unsigned not null,
@@ -40,5 +40,5 @@ create table ciniki_bug_users (
     last_updated datetime not null,
     primary key (id),
     unique index (bug_id, user_id),
-    index (business_id, uuid, last_updated)
+    index (tnid, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.03';

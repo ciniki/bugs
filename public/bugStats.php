@@ -17,7 +17,7 @@ function ciniki_bugs_bugStats($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -26,10 +26,10 @@ function ciniki_bugs_bugStats($ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'checkAccess');
-    $rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.bugStats', 0, 0); 
+    $rc = ciniki_bugs_checkAccess($ciniki, $args['tnid'], 'ciniki.bugs.bugStats', 0, 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
@@ -63,7 +63,7 @@ function ciniki_bugs_bugStats($ciniki) {
     $strsql = "SELECT type AS type_name, COUNT(*) AS count, "
         . "IF(category='', 'Uncategorized', category) AS name "
         . "FROM ciniki_bugs "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND status = 1 "
         . "GROUP BY ciniki_bugs.type, ciniki_bugs.category "
         . "";
@@ -90,7 +90,7 @@ function ciniki_bugs_bugStats($ciniki) {
     //
     $strsql = "SELECT type AS type_name, priority AS name, COUNT(*) AS count "
         . "FROM ciniki_bugs "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND status = 1 "
         . "GROUP BY ciniki_bugs.type, ciniki_bugs.priority DESC "
         . "";
@@ -118,7 +118,7 @@ function ciniki_bugs_bugStats($ciniki) {
     // Get the latest submissions from the last 72 hours that are open
     //
     $strsql = "SELECT ciniki_bugs.id, "
-        . "ciniki_bugs.business_id, "
+        . "ciniki_bugs.tnid, "
         . "ciniki_bugs.user_id, "
         . "ciniki_bugs.type, "
         . "ciniki_bugs.priority, "
@@ -130,7 +130,7 @@ function ciniki_bugs_bugStats($ciniki) {
         . "DATE_FORMAT(CONVERT_TZ(ciniki_bugs.date_added, '+00:00', '" . ciniki_core_dbQuote($ciniki, $utc_offset) . "'), '" . ciniki_core_dbQuote($ciniki, $datetime_format) . "') AS date_added, "
         . "DATE_FORMAT(CONVERT_TZ(ciniki_bugs.last_updated, '+00:00', '" . ciniki_core_dbQuote($ciniki, $utc_offset) . "'), '" . ciniki_core_dbQuote($ciniki, $datetime_format) . "') AS last_updated "
         . "FROM ciniki_bugs "
-        . "WHERE ciniki_bugs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_bugs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ciniki_bugs.status = 1 "
         . "AND UNIX_TIMESTAMP(ciniki_bugs.date_added) > (UNIX_TIMESTAMP() - 259200) "
         . "ORDER BY date_added DESC "
@@ -139,7 +139,7 @@ function ciniki_bugs_bugStats($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.bugs', array(
         array('container'=>'bugs', 'fname'=>'id', 'name'=>'bug',
-            'fields'=>array('id', 'business_id', 'user_id', 'type', 'priority', 
+            'fields'=>array('id', 'tnid', 'user_id', 'type', 'priority', 
                 'status', 'status_text', 'subject', 
                 'source', 'source_link', 'date_added', 'last_updated'),
             'maps'=>array('status_text'=>array('0'=>'Unknown', '1'=>'Open', '60'=>'Closed'),

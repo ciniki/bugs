@@ -68,22 +68,22 @@ function ciniki_bugs_main() {
         this.menu.rowStyle = function(s, i, d) {
             if( s == 'bug_priorities' || s == 'feature_priorities' || s == 'question_priorities' ) {
                 switch (d.priority.name) {
-                    case 'Low': return 'background: ' + M.curBusiness.bugs.settings['colours.priority.10'];
-                    case 'Medium': return 'background: ' + M.curBusiness.bugs.settings['colours.priority.30'];
-                    case 'High': return 'background: ' + M.curBusiness.bugs.settings['colours.priority.50'];
+                    case 'Low': return 'background: ' + M.curTenant.bugs.settings['colours.priority.10'];
+                    case 'Medium': return 'background: ' + M.curTenant.bugs.settings['colours.priority.30'];
+                    case 'High': return 'background: ' + M.curTenant.bugs.settings['colours.priority.50'];
                 }
             } else if( s == 'latest' ) {
                 if( d.bug.status != '60' ) { 
                     if( d.bug.priority > 0 ) {
-                        return 'background: ' + M.curBusiness.bugs.settings['colours.priority.' + d.bug.priority]; 
+                        return 'background: ' + M.curTenant.bugs.settings['colours.priority.' + d.bug.priority]; 
                     }
                 }
-                else { return 'background: ' + M.curBusiness.bugs.settings['colours.status.60']; }
+                else { return 'background: ' + M.curTenant.bugs.settings['colours.status.60']; }
             }
         };
         this.menu.cellValue = function(s, i, j, d) { 
             switch (j) {
-                case 0: return '<span class="icon">' + M.curBusiness.bugs.priorities[d.bug.priority] + '</span>';
+                case 0: return '<span class="icon">' + M.curTenant.bugs.priorities[d.bug.priority] + '</span>';
 //              case 1: return '<span class="maintext">' + d.bug.type + ' #' + d.bug.id + '</span><span class="subtext">' + d.bug.assigned_users + '</span>';   
                 case 1: return '<span class="maintext">' + '#' + d.bug.id + '</span><span class="subtext">' + d.bug.type + '</span>';   
                 case 2: return '<span class="maintext">' + d.bug.subject + '</span><span class="subtext">' + d.bug.source + ':' + d.bug.source_link + '</span>';    
@@ -94,7 +94,7 @@ function ciniki_bugs_main() {
         this.menu.rowFn = function(s, i, d) { return 'M.ciniki_bugs_main.showEdit(\'M.ciniki_bugs_main.showMenu();\',\'' + d.bug.id + '\');'; }
         // Live Search functions
         this.menu.liveSearchCb = function(s, i, v) {
-            M.api.getJSONBgCb('ciniki.bugs.bugSearchQuick', {'business_id':M.curBusinessID, 'start_needle':v, 'limit':'15'},
+            M.api.getJSONBgCb('ciniki.bugs.bugSearchQuick', {'tnid':M.curTenantID, 'start_needle':v, 'limit':'15'},
                 function(rsp) {
                     M.ciniki_bugs_main.menu.liveSearchShow(s, null, M.gE(M.ciniki_bugs_main.menu.panelUID + '_' + s), rsp.bugs);
                 });
@@ -105,7 +105,7 @@ function ciniki_bugs_main() {
         };
         this.menu.liveSearchResultValue = function(s, f, i, j, d) {
             switch(j) {
-                case 0: return '<span class="icon">' + M.curBusiness.bugs.priorities[d.bug.priority] + '</span>';
+                case 0: return '<span class="icon">' + M.curTenant.bugs.priorities[d.bug.priority] + '</span>';
                 case 1: return '<span class="maintext">' + d.bug.type + ' #' + d.bug.id + '</span><span class="subtext">' + d.bug.assigned_users + '</span>';   
                 case 2: return '<span class="maintext">' + d.bug.subject + '</span><span class="subtext">' + d.bug.source + ':' + d.bug.source_link + '</span>';    
             }
@@ -117,10 +117,10 @@ function ciniki_bugs_main() {
         this.menu.liveSearchResultRowStyle = function(s, f, i, d) {
             if( d.bug.status != 'closed' ) { 
                 if( d.bug.priority > 0 ) {
-                    return 'background: ' + M.curBusiness.bugs.settings['colours.priority.' + d.bug.priority]; 
+                    return 'background: ' + M.curTenant.bugs.settings['colours.priority.' + d.bug.priority]; 
                 }
             }
-            else { return 'background: ' + M.curBusiness.bugs.settings['colours.status.60']; }
+            else { return 'background: ' + M.curTenant.bugs.settings['colours.status.60']; }
             return '';
         };
         this.menu.liveSearchSubmitFn = function(s, search_str) {
@@ -154,7 +154,7 @@ function ciniki_bugs_main() {
         this.list.noData = function(s) { return this.sections[s].noData; }
         this.list.cellValue = function(s, i, j, d) { 
             switch (j) {
-                case 0: return '<span class="icon">' + M.curBusiness.bugs.priorities[d.bug.priority] + '</span>';
+                case 0: return '<span class="icon">' + M.curTenant.bugs.priorities[d.bug.priority] + '</span>';
                 case 1: return '<span class="maintext">' + d.bug.type + ' #' + d.bug.id + '</span><span class="subtext">' + d.bug.assigned_users + '</span>';   
                 case 2: return '<span class="maintext">' + d.bug.subject + '</span><span class="subtext">' + d.bug.source + ':' + d.bug.source_link + '</span>';    
                 case 3: return d.bug.status_text;   
@@ -164,10 +164,10 @@ function ciniki_bugs_main() {
         this.list.rowStyle = function(s, i, d) {
             if( d.bug.status != '60' ) { 
                 if( d.bug.priority > 0 ) {
-                    return 'background: ' + M.curBusiness.bugs.settings['colours.priority.' + d.bug.priority]; 
+                    return 'background: ' + M.curTenant.bugs.settings['colours.priority.' + d.bug.priority]; 
                 }
             }
-            else { return 'background: ' + M.curBusiness.bugs.settings['colours.status.60']; }
+            else { return 'background: ' + M.curTenant.bugs.settings['colours.status.60']; }
             return '';
         };
         this.list.rowFn = function(s, i, d) { return 'M.ciniki_bugs_main.showEdit(\'M.ciniki_bugs_main.showList();\',\'' + d.bug.id + '\');'; }
@@ -195,8 +195,8 @@ function ciniki_bugs_main() {
                 'subject':{'label':'Subject', 'type':'text'},
                 'category':{'label':'Category', 'type':'text', 'livesearch':'yes', 'livesearchempty':'yes'},
                 // FIXME: Add priority and status
-                'assigned':{'label':'Assigned', 'type':'multiselect', 'none':'yes', 'options':M.curBusiness.employees, 'history':'yes'},
-                'priority':{'label':'Priority', 'type':'multitoggle', 'toggles':M.curBusiness.bugs.priorityText, 'history':'yes'},
+                'assigned':{'label':'Assigned', 'type':'multiselect', 'none':'yes', 'options':M.curTenant.employees, 'history':'yes'},
+                'priority':{'label':'Priority', 'type':'multitoggle', 'toggles':M.curTenant.bugs.priorityText, 'history':'yes'},
                 'status':{'label':'Status', 'type':'multitoggle', 'toggles':this.statuses},
                 'options':{'label':'Options', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.optionFlags},
                 }},
@@ -225,8 +225,8 @@ function ciniki_bugs_main() {
             'details':{'label':'', 'hidelabel':'yes', 'aside':'yes', 'fields':{
                 'subject':{'label':'Subject', 'type':'text'},
                 'category':{'label':'Category', 'type':'text', 'livesearch':'yes', 'livesearchempty':'yes'},
-                'assigned':{'label':'Assigned', 'type':'multiselect', 'none':'yes', 'options':M.curBusiness.employees},
-                'priority':{'label':'Priority', 'type':'multitoggle', 'toggles':M.curBusiness.bugs.priorityText, 'history':'yes'},
+                'assigned':{'label':'Assigned', 'type':'multiselect', 'none':'yes', 'options':M.curTenant.employees},
+                'priority':{'label':'Priority', 'type':'multitoggle', 'toggles':M.curTenant.bugs.priorityText, 'history':'yes'},
                 'status':{'label':'Status', 'type':'multitoggle', 'toggles':this.statuses, 'history':'yes'},
                 'options':{'label':'Options', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.optionFlags},
                 }},
@@ -256,8 +256,8 @@ function ciniki_bugs_main() {
             'details':{'label':'', 'aside':'yes', 'hidelabel':'yes', 'fields':{
                 'subject':{'label':'Subject', 'type':'text'},
                 'category':{'label':'Category', 'type':'text', 'livesearch':'yes', 'livesearchempty':'yes'},
-                'assigned':{'label':'Assigned', 'type':'multiselect', 'none':'yes', 'options':M.curBusiness.employees},
-                'priority':{'label':'Priority', 'type':'multitoggle', 'toggles':M.curBusiness.bugs.priorityText, 'history':'yes'},
+                'assigned':{'label':'Assigned', 'type':'multiselect', 'none':'yes', 'options':M.curTenant.employees},
+                'priority':{'label':'Priority', 'type':'multitoggle', 'toggles':M.curTenant.bugs.priorityText, 'history':'yes'},
                 'status':{'label':'Status', 'type':'multitoggle', 'toggles':this.statuses, 'history':'yes'},
                 'options':{'label':'Options', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.optionFlags},
                 }},
@@ -329,7 +329,7 @@ function ciniki_bugs_main() {
         this.edit.threadFollowupContent = function(s, i, d) { return d.followup.content; }
         this.edit.liveSearchCb = function(s, i, value) {
             if( i == 'category' ) {
-                var rsp = M.api.getJSONBgCb('ciniki.bugs.bugSearchField', {'business_id':M.curBusinessID, 
+                var rsp = M.api.getJSONBgCb('ciniki.bugs.bugSearchField', {'tnid':M.curTenantID, 
                     'field':i, 'start_needle':value, 'limit':15}, function(rsp) {
                         M.ciniki_bugs_main.edit.liveSearchShow(s, i, M.gE(M.ciniki_bugs_main.edit.panelUID + '_' + i), rsp.results);
                     });
@@ -348,7 +348,7 @@ function ciniki_bugs_main() {
             this.removeLiveSearch(s, fid);
         };
         this.edit.fieldHistoryArgs = function(s, i) {
-            return {'method':'ciniki.bugs.bugHistory', 'args':{'business_id':M.curBusinessID, 
+            return {'method':'ciniki.bugs.bugHistory', 'args':{'tnid':M.curTenantID, 
                 'bug_id':M.ciniki_bugs_main.edit.bug_id, 'field':i}};
         };
         this.edit.addButton('save', 'Save', 'M.ciniki_bugs_main.saveBug();');
@@ -379,7 +379,7 @@ function ciniki_bugs_main() {
         this.search.noData = function(s) { return this.sections[s].noData; }
         this.search.cellValue = function(s, i, j, d) { 
             switch (j) {
-                case 0: return '<span class="icon">' + M.curBusiness.bugs.priorities[d.bug.priority] + '</span>';
+                case 0: return '<span class="icon">' + M.curTenant.bugs.priorities[d.bug.priority] + '</span>';
                 case 1: return '<span class="maintext">' + d.bug.type + ' #' + d.bug.id + '</span><span class="subtext">' + d.bug.assigned_users + '</span>';   
                 case 2: return '<span class="maintext">' + d.bug.subject + '</span><span class="subtext">' + d.bug.source + ':' + d.bug.source_link + '</span>';    
                 case 3: return d.bug.status_text;   
@@ -389,10 +389,10 @@ function ciniki_bugs_main() {
         this.search.rowStyle = function(s, i, d) {
             if( d.bug.status != '60' ) { 
                 if( d.bug.priority > 0 ) {
-                    return 'background: ' + M.curBusiness.bugs.settings['colours.priority.' + d.bug.priority]; 
+                    return 'background: ' + M.curTenant.bugs.settings['colours.priority.' + d.bug.priority]; 
                 }
             }
-            else { return 'background: ' + M.curBusiness.bugs.settings['colours.status.60']; }
+            else { return 'background: ' + M.curTenant.bugs.settings['colours.status.60']; }
             return '';
         };
         this.search.rowFn = function(s, i, d) { return 'M.ciniki_bugs_main.showEdit(\'M.ciniki_bugs_main.searchBugs();\',\'' + d.bug.id + '\');'; }
@@ -427,7 +427,7 @@ function ciniki_bugs_main() {
     }
 
     this.showMenu = function(cb) {
-        var rsp = M.api.getJSONCb('ciniki.bugs.bugStats', {'business_id':M.curBusinessID}, function(rsp) {
+        var rsp = M.api.getJSONCb('ciniki.bugs.bugStats', {'tnid':M.curTenantID}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -511,7 +511,7 @@ function ciniki_bugs_main() {
             }
         }
 
-        var args = {'business_id':M.curBusinessID, 
+        var args = {'tnid':M.curTenantID, 
             'type':this.list.bug_type, 
             'order':'openclosed',
             'status':'all',
@@ -561,7 +561,7 @@ function ciniki_bugs_main() {
             this.edit.forms.question._followup.label = 'Add your response';
             this.edit.forms.question.info.visible = 'yes';
             var r = M.api.getJSONCb('ciniki.bugs.bugGet', 
-                {'business_id':M.curBusinessID, 'bug_id':this.edit.bug_id}, function(r) {
+                {'tnid':M.curTenantID, 'bug_id':this.edit.bug_id}, function(r) {
                     if( r.stat != 'ok' ) {
                         M.api.err(r);
                         return false;
@@ -612,7 +612,7 @@ function ciniki_bugs_main() {
             var c = this.edit.serializeForm('no');
             if( c != '' ) {
                 var rsp = M.api.postJSONCb('ciniki.bugs.bugUpdate', 
-                    {'business_id':M.curBusinessID, 'bug_id':this.edit.bug_id}, c, function(rsp) {
+                    {'tnid':M.curTenantID, 'bug_id':this.edit.bug_id}, c, function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
                             return false;
@@ -625,7 +625,7 @@ function ciniki_bugs_main() {
         } else {
             var c = this.edit.serializeForm('yes');
             var rsp = M.api.postJSONCb('ciniki.bugs.bugAdd', 
-                {'business_id':M.curBusinessID, 'state':'Open'}, c, function(rsp) {
+                {'tnid':M.curTenantID, 'state':'Open'}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -640,7 +640,7 @@ function ciniki_bugs_main() {
             this.search.needle = needle;
         }
         var r = M.api.getJSONCb('ciniki.bugs.bugSearchFull', 
-            {'business_id':M.curBusinessID, 'start_needle':this.search.needle, 'status':'1'}, function(rsp) {
+            {'tnid':M.curTenantID, 'start_needle':this.search.needle, 'status':'1'}, function(rsp) {
                 if( r.stat != 'ok' ) {
                     M.api.err(r);
                     return false;

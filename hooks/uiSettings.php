@@ -7,12 +7,12 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:     The ID of the business to get bugs for.
+// tnid:     The ID of the tenant to get bugs for.
 //
 // Returns
 // -------
 //
-function ciniki_bugs_hooks_uiSettings($ciniki, $business_id, $args) {
+function ciniki_bugs_hooks_uiSettings($ciniki, $tnid, $args) {
 
     //
     // Setup the default response
@@ -22,7 +22,7 @@ function ciniki_bugs_hooks_uiSettings($ciniki, $business_id, $args) {
     //
     // Get the settings
     //
-    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_bugs_settings', 'business_id', $business_id, 'ciniki.bugs', 'settings', '');
+    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_bugs_settings', 'tnid', $tnid, 'ciniki.bugs', 'settings', '');
     if( $rc['stat'] == 'ok' && isset($rc['settings']) ) {
         $rsp['settings'] = $rc['settings'];
     }
@@ -30,7 +30,7 @@ function ciniki_bugs_hooks_uiSettings($ciniki, $business_id, $args) {
     //
     // Check permissions for what menu items should be available
     //
-    if( isset($ciniki['business']['modules']['ciniki.bugs'])
+    if( isset($ciniki['tenant']['modules']['ciniki.bugs'])
         && (isset($args['permissions']['owners'])
             || isset($args['permissions']['employees'])
             || isset($args['permissions']['resellers'])
@@ -46,7 +46,7 @@ function ciniki_bugs_hooks_uiSettings($ciniki, $business_id, $args) {
 
     } 
 
-    if( isset($ciniki['business']['modules']['ciniki.bugs'])
+    if( isset($ciniki['tenant']['modules']['ciniki.bugs'])
         && (isset($args['permissions']['owners'])
             || isset($args['permissions']['resellers'])
             || ($ciniki['session']['user']['perms']&0x01) == 0x01

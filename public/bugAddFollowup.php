@@ -12,7 +12,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The business the bug is attached to.
+// tnid:         The tenant the bug is attached to.
 // bug_id:              The bug to attach the follow up.
 // content:             The content of the reply to attach.
 // 
@@ -26,7 +26,7 @@ function ciniki_bugs_bugAddFollowup(&$ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'bug_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Bug'),
         'content'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Content'), 
         ));
@@ -39,7 +39,7 @@ function ciniki_bugs_bugAddFollowup(&$ciniki) {
     // Get the module settings
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'getSettings');
-    $rc = ciniki_bugs_getSettings($ciniki, $args['business_id'], 'ciniki.bugs.bugAddFollowup');
+    $rc = ciniki_bugs_getSettings($ciniki, $args['tnid'], 'ciniki.bugs.bugAddFollowup');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -47,10 +47,10 @@ function ciniki_bugs_bugAddFollowup(&$ciniki) {
 
     //
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'checkAccess');
-    $rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.bugAddFollowup', $args['bug_id'], 0);
+    $rc = ciniki_bugs_checkAccess($ciniki, $args['tnid'], 'ciniki.bugs.bugAddFollowup', $args['bug_id'], 0);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -76,7 +76,7 @@ function ciniki_bugs_bugAddFollowup(&$ciniki) {
     // Add a followup 
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadAddFollowup');
-    $rc = ciniki_core_threadAddFollowup($ciniki, 'ciniki.bugs', 'followup', $args['business_id'], 
+    $rc = ciniki_core_threadAddFollowup($ciniki, 'ciniki.bugs', 'followup', $args['tnid'], 
         'ciniki_bug_followups', 'ciniki_bug_history', 'bug', $args['bug_id'], $args);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.bugs');
@@ -88,11 +88,11 @@ function ciniki_bugs_bugAddFollowup(&$ciniki) {
     // will make sure the flag is set.
     // 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadAddUserPerms');
-    $rc = ciniki_core_threadAddUserPerms($ciniki, 'ciniki.bugs', 'user', $args['business_id'], 
+    $rc = ciniki_core_threadAddUserPerms($ciniki, 'ciniki.bugs', 'user', $args['tnid'], 
         'ciniki_bug_users', 'ciniki_bug_history', 
         'bug', $args['bug_id'], $ciniki['session']['user']['id'], (0x01));
 //  ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadAddFollower');
-//  $rc = ciniki_core_threadAddFollower($ciniki, 'ciniki.bugs', 'user', $args['business_id'], 
+//  $rc = ciniki_core_threadAddFollower($ciniki, 'ciniki.bugs', 'user', $args['tnid'], 
 //      'ciniki_bug_users', 'ciniki_bug_history', 
 //      'bug', $args['bug_id'], $ciniki['session']['user']['id']);
     if( $rc['stat'] != 'ok' ) {
@@ -105,7 +105,7 @@ function ciniki_bugs_bugAddFollowup(&$ciniki) {
     //
     $strsql = "UPDATE ciniki_bugs SET last_updated = UTC_TIMESTAMP() "
         . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' "
-        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     $rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.bugs');
     if( $rc['stat'] != 'ok' ) {
@@ -126,7 +126,7 @@ function ciniki_bugs_bugAddFollowup(&$ciniki) {
     //
     $strsql = "SELECT subject "
         . "FROM ciniki_bugs "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
@@ -147,11 +147,11 @@ function ciniki_bugs_bugAddFollowup(&$ciniki) {
         );
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'bugs');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'bugs');
 
     return array('stat'=>'ok');
 }

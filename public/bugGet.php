@@ -8,13 +8,13 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The business the bug is attached to.
+// tnid:         The tenant the bug is attached to.
 // bug_id:              The id of the bug to retrieve the information for.
 // 
 // Returns
 // -------
 // <rsp stat='ok'>
-//  <bug id="1" user_id="2" subject="The bug subject" priority="10" status="1" source="ciniki-manage" source_link="mapp.menu.businesses" date_added="Nov 9, 2011 8:57 AM" last_updated="Nov 9, 2011 9:00 AM" />
+//  <bug id="1" user_id="2" subject="The bug subject" priority="10" status="1" source="ciniki-manage" source_link="mapp.menu.tenants" date_added="Nov 9, 2011 8:57 AM" last_updated="Nov 9, 2011 9:00 AM" />
 //      <followups>
 //          <followup id="2" user_id="1" content="" />
 //      </followups>
@@ -35,7 +35,7 @@ function ciniki_bugs_bugGet($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'bug_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Bug'), 
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -47,7 +47,7 @@ function ciniki_bugs_bugGet($ciniki) {
     // Get the module options
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'getSettings');
-    $rc = ciniki_bugs_getSettings($ciniki, $args['business_id'], 'ciniki.bugs.bugGet');
+    $rc = ciniki_bugs_getSettings($ciniki, $args['tnid'], 'ciniki.bugs.bugGet');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -55,16 +55,16 @@ function ciniki_bugs_bugGet($ciniki) {
 
     //
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'checkAccess');
-    $rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.bugGet', $args['bug_id'], 0);
+    $rc = ciniki_bugs_checkAccess($ciniki, $args['tnid'], 'ciniki.bugs.bugGet', $args['bug_id'], 0);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
     
     //
-    // FIXME: Add timezone information from business settings
+    // FIXME: Add timezone information from tenant settings
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'timezoneOffset');
     $utc_offset = ciniki_users_timezoneOffset($ciniki);
@@ -90,7 +90,7 @@ function ciniki_bugs_bugGet($ciniki) {
         . "DATE_FORMAT(CONVERT_TZ(ciniki_bugs.last_updated, '+00:00', '" . ciniki_core_dbQuote($ciniki, $utc_offset) . "'), '" . ciniki_core_dbQuote($ciniki, $datetime_format) . "') AS last_updated "
         . "FROM ciniki_bugs "
         . "LEFT JOIN ciniki_bug_users ON (ciniki_bugs.id = ciniki_bug_users.bug_id) "
-        . "WHERE ciniki_bugs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_bugs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ciniki_bugs.id = '" . ciniki_core_dbQuote($ciniki, $args['bug_id']) . "' "
         . "";
     // If not a sysadmin, then check they are attached to this bug, or the bug is public

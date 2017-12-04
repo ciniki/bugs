@@ -1,5 +1,5 @@
 #
-# This file will upgrade the database table businesses to version 1.02.
+# This file will upgrade the database table tenants to version 1.02.
 #
 ALTER TABLE ciniki_bugs ADD COLUMN priority tinyint unsigned not null AFTER type;
 ALTER TABLE ciniki_bugs ADD COLUMN status tinyint unsigned not null AFTER priority;

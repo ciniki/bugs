@@ -2,7 +2,7 @@
 #
 ALTER TABLE ciniki_bug_followups ADD COLUMN uuid char(36) not null AFTER id;
 UPDATE ciniki_bug_followups SET uuid = uuid();
-ALTER TABLE ciniki_bug_followups ADD COLUMN business_id int not null AFTER uuid;
-UPDATE ciniki_bug_followups SET business_id = (SELECT business_id FROM ciniki_bugs WHERE ciniki_bugs.id = ciniki_bug_followups.bug_id);
-CREATE INDEX business_id ON ciniki_bug_followups (business_id, uuid, last_updated);
+ALTER TABLE ciniki_bug_followups ADD COLUMN tnid int not null AFTER uuid;
+UPDATE ciniki_bug_followups SET tnid = (SELECT tnid FROM ciniki_bugs WHERE ciniki_bugs.id = ciniki_bug_followups.bug_id);
+CREATE INDEX tnid ON ciniki_bug_followups (tnid, uuid, last_updated);
 ALTER TABLE ciniki_bug_followups COMMENT='v1.03';

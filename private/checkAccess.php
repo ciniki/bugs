@@ -10,12 +10,12 @@
 // Returns
 // -------
 //
-function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_id) {
+function ciniki_bugs_checkAccess($ciniki, $tnid, $method, $bug_id, $user_id) {
     //
-    // Check if the business is active and the module is enabled
+    // Check if the tenant is active and the module is enabled
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'checkModuleAccess');
-    $rc = ciniki_businesses_checkModuleAccess($ciniki, $business_id, 'ciniki', 'bugs');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'checkModuleAccess');
+    $rc = ciniki_tenants_checkModuleAccess($ciniki, $tnid, 'ciniki', 'bugs');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -59,19 +59,19 @@ function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_
     //
 
     //
-    // If permissions_group specified, check the session user in the business_users table.
+    // If permissions_group specified, check the session user in the tenant_users table.
     //
     if( isset($rules['permission_groups']) && $rules['permission_groups'] > 0 ) {
         //
-        // If the user is attached to the business AND in the one of the accepted permissions group, they will be granted access
+        // If the user is attached to the tenant AND in the one of the accepted permissions group, they will be granted access
         //
-        $strsql = "SELECT business_id, user_id FROM ciniki_business_users "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        $strsql = "SELECT tnid, user_id FROM ciniki_tenant_users "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' "
             . "AND status = 10 "
             . "AND CONCAT_WS('.', package, permission_group) IN ('" . implode("','", $rules['permission_groups']) . "') "
             . "";
-        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.businesses', 'user');
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.tenants', 'user');
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.bugs.4', 'msg'=>'Access denied.', 'err'=>$rc['err']));
         }
@@ -86,15 +86,15 @@ function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_
     }
 
     //
-    // When dealing with the master business, a customer can be any business employee from
-    // any active business.  This allows them to submit bugs via ciniki-manage.
+    // When dealing with the master tenant, a customer can be any tenant employee from
+    // any active tenant.  This allows them to submit bugs via ciniki-manage.
     //
-    if( isset($rules['customer']) && $rules['customer'] == 'any' && $ciniki['config']['core']['master_business_id'] == $business_id ) {
-        $strsql = "SELECT user_id FROM ciniki_business_users, ciniki_businesses "
-            . "WHERE ciniki_business_users.user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' "
-            . "AND ciniki_business_users.business_id = ciniki_businesses.id "
-            . "AND ciniki_businesses.status = 1 ";
-        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.businesses', 'user');
+    if( isset($rules['customer']) && $rules['customer'] == 'any' && $ciniki['config']['core']['master_tnid'] == $tnid ) {
+        $strsql = "SELECT user_id FROM ciniki_tenant_users, ciniki_tenants "
+            . "WHERE ciniki_tenant_users.user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' "
+            . "AND ciniki_tenant_users.tnid = ciniki_tenants.id "
+            . "AND ciniki_tenants.status = 1 ";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.tenants', 'user');
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
@@ -104,14 +104,14 @@ function ciniki_bugs_checkAccess($ciniki, $business_id, $method, $bug_id, $user_
     } 
     
     // 
-    // Check if the session user is a customer of the business
+    // Check if the session user is a customer of the tenant
     //
     if( isset($rules['customer']) && $rules['customer'] == 'any' ) {
         // FIXME: finish, there is currently no link between customers and users.  When that is in place, this will work.
     //  $strsql = "SELECT * FROM ciniki_customers "
-    //      . "WHERE customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "'"
+    //      . "WHERE customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "'"
     //      . "AND customers.user_id = ";
-    //  $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.businesses', 'user');
+    //  $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.tenants', 'user');
     //  if( $rc['stat'] != 'ok' ) {
     //      return $rc;
     //  }

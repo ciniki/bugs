@@ -12,13 +12,13 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The business the bug is attached to.
+// tnid:         The tenant the bug is attached to.
 // name:                The very brief bug description.
 // 
 // Returns
 // -------
 // <bugs>
-//      <bug id="1" user_id="1" subject="The bug subject" source="ciniki-manage" source_link="mapp.menu.businesses" age="2 days" updated_age="1 day" />
+//      <bug id="1" user_id="1" subject="The bug subject" source="ciniki-manage" source_link="mapp.menu.tenants" age="2 days" updated_age="1 day" />
 // </bugs>
 // <users>
 //      <1>
@@ -32,7 +32,7 @@ function ciniki_bugs_bugList($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'type'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Type'), 
         'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'), 
         'priority'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Priority'), 
@@ -55,7 +55,7 @@ function ciniki_bugs_bugList($ciniki) {
     // Get the module settings
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'getSettings');
-    $rc = ciniki_bugs_getSettings($ciniki, $args['business_id'], 'ciniki.bugs.bugList');
+    $rc = ciniki_bugs_getSettings($ciniki, $args['tnid'], 'ciniki.bugs.bugList');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -63,10 +63,10 @@ function ciniki_bugs_bugList($ciniki) {
 
     //
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'checkAccess');
-    $rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.bugList', 0, 0);
+    $rc = ciniki_bugs_checkAccess($ciniki, $args['tnid'], 'ciniki.bugs.bugList', 0, 0);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -81,7 +81,7 @@ function ciniki_bugs_bugList($ciniki) {
 //  ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadGetList');
 //  return ciniki_core_threadGetList($ciniki, 'ciniki.bugs', 'ciniki_bugs', 'bugs', 'bug', $args);
     //
-    // FIXME: Add timezone information from business settings
+    // FIXME: Add timezone information from tenant settings
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'timezoneOffset');
     $utc_offset = ciniki_users_timezoneOffset($ciniki);
@@ -93,7 +93,7 @@ function ciniki_bugs_bugList($ciniki) {
     // Setup the SQL statement to insert the new thread
     //
     $strsql = "SELECT ciniki_bugs.id, "
-        . "ciniki_bugs.business_id, "
+        . "ciniki_bugs.tnid, "
         . "ciniki_bugs.user_id, "
         . "ciniki_bugs.type, "
         . "ciniki_bugs.priority, "
@@ -109,7 +109,7 @@ function ciniki_bugs_bugList($ciniki) {
         . "FROM ciniki_bugs "
         . "LEFT JOIN ciniki_bug_users AS u2 ON (ciniki_bugs.id = u2.bug_id && (u2.perms&0x02) = 2) "
         . "LEFT JOIN ciniki_users AS u3 ON (u2.user_id = u3.id) "
-        . "WHERE ciniki_bugs.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' ";
+        . "WHERE ciniki_bugs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
     if( isset($args['type']) && $args['type'] != '' && $args['type'] != 0 && $args['type'] != 'all' ) {
         $strsql .= "AND type = '" . ciniki_core_dbQuote($ciniki, $args['type']) . "' ";
     }
@@ -182,7 +182,7 @@ function ciniki_bugs_bugList($ciniki) {
             array('container'=>'status', 'fname'=>'status', 'name'=>'status',
                 'fields'=>array('status', 'name'=>'status_text')),
             array('container'=>'bugs', 'fname'=>'id', 'name'=>'bug',
-                'fields'=>array('id', 'business_id', 'user_id', 'type', 'priority', 
+                'fields'=>array('id', 'tnid', 'user_id', 'type', 'priority', 
                     'status', 'status_text', 'subject', 
                     'source', 'source_link', 'date_added', 'last_updated', 'assigned_users'),
                 'lists'=>array('assigned_users'),
@@ -211,7 +211,7 @@ function ciniki_bugs_bugList($ciniki) {
             array('container'=>'types', 'fname'=>'type', 'name'=>'type',
                 'fields'=>array('id'=>'type')),
             array('container'=>'bugs', 'fname'=>'id', 'name'=>'bug',
-                'fields'=>array('id', 'business_id', 'user_id', 'type', 'priority', 
+                'fields'=>array('id', 'tnid', 'user_id', 'type', 'priority', 
                     'status', 'status_text', 'subject', 
                     'source', 'source_link', 'date_added', 'last_updated', 'assigned_users'),
                 'lists'=>array('assigned_users'),
@@ -243,7 +243,7 @@ function ciniki_bugs_bugList($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.bugs', array(
             array('container'=>'bugs', 'fname'=>'id', 'name'=>'bug',
-                'fields'=>array('id', 'business_id', 'user_id', 'type', 'priority', 'status', 'status_text', 'subject', 
+                'fields'=>array('id', 'tnid', 'user_id', 'type', 'priority', 'status', 'status_text', 'subject', 
                     'source', 'source_link', 'date_added', 'last_updated', 'assigned_users'),
                 'lists'=>array('assigned_users'),
                 'maps'=>array('status_text'=>array('0'=>'Unknown', '1'=>'Open', '60'=>'Closed'),

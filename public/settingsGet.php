@@ -2,7 +2,7 @@
 //
 // Description
 // -----------
-// This will return the list of settings for the bugs module for a business.
+// This will return the list of settings for the bugs module for a tenant.
 //
 // Info
 // ----
@@ -21,7 +21,7 @@ function ciniki_bugs_settingsGet($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -30,19 +30,19 @@ function ciniki_bugs_settingsGet($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'bugs', 'private', 'checkAccess');
-    $rc = ciniki_bugs_checkAccess($ciniki, $args['business_id'], 'ciniki.bugs.settingsGet', 0, 0); 
+    $rc = ciniki_bugs_checkAccess($ciniki, $args['tnid'], 'ciniki.bugs.settingsGet', 0, 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
     
     //
-    // Grab the settings for the business from the database
+    // Grab the settings for the tenant from the database
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQuery');
-    $rc = ciniki_core_dbDetailsQuery($ciniki, 'ciniki_bug_settings', 'business_id', $args['business_id'], 'ciniki.bugs', 'settings', '');
+    $rc = ciniki_core_dbDetailsQuery($ciniki, 'ciniki_bug_settings', 'tnid', $args['tnid'], 'ciniki.bugs', 'settings', '');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
