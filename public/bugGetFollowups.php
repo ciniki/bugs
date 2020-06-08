@@ -69,6 +69,23 @@ function ciniki_bugs_bugGetFollowups($ciniki) {
     $args['user_id'] = $ciniki['session']['user']['id'];
     
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'threadGetFollowups');
-    return ciniki_core_threadGetFollowups($ciniki, 'ciniki.bugs', 'ciniki_bug_followups', 'bug', $args['bug_id'], $args);
+    $rc = ciniki_core_threadGetFollowups($ciniki, 'ciniki.bugs', 'ciniki_bug_followups', 'bug', $args['bug_id'], $args);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.bugs.18', 'msg'=>'Unable to load bug', 'err'=>$rc['err']));
+    }
+   
+    if( isset($rc['followups']) ) {
+        $followups = $rc['followups'];
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'processContent');
+        foreach($followups as $fid => $followup) {
+            $rc = ciniki_web_processContent($ciniki, array(), $followup['followup']['content']);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.bugs.19', 'msg'=>'Unable to load bug', 'err'=>$rc['err']));
+            }
+            $followups[$fid]['followup']['html_content'] = $rc['content'];
+        }
+    }
+
+    return array('stat'=>'ok', 'followups'=>$followups);
 }
 ?>
