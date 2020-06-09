@@ -84,6 +84,8 @@ function ciniki_bugs_bugGetFollowups($ciniki) {
             }
             $followups[$fid]['followup']['html_content'] = $rc['content'];
         }
+    } else {
+        $followups = array();
     }
 
     return array('stat'=>'ok', 'followups'=>$followups);
