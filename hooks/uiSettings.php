@@ -22,7 +22,7 @@ function ciniki_bugs_hooks_uiSettings($ciniki, $tnid, $args) {
     //
     // Get the settings
     //
-    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_bugs_settings', 'tnid', $tnid, 'ciniki.bugs', 'settings', '');
+    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_bug_settings', 'tnid', $tnid, 'ciniki.bugs', 'settings', '');
     if( $rc['stat'] == 'ok' && isset($rc['settings']) ) {
         $rsp['settings'] = $rc['settings'];
     }
