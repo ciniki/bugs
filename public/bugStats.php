@@ -92,7 +92,8 @@ function ciniki_bugs_bugStats($ciniki) {
         . "FROM ciniki_bugs "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND status = 1 "
-        . "GROUP BY ciniki_bugs.type, ciniki_bugs.priority DESC "
+        . "GROUP BY ciniki_bugs.type, ciniki_bugs.priority "
+        . "ORDER BY ciniki_bugs.type, ciniki_bugs.priority "
         . "";
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.bugs', array(
         array('container'=>'types', 'fname'=>'type_name', 'name'=>'type',
